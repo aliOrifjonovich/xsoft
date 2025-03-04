@@ -35,7 +35,7 @@ const Reservation: FC<ReservationProps> = ({ data }) => {
           Add Reservation
         </Button>
       </div>
-      <DataTable columns={columns} data={data || []} />
+      <DataTable columns={columns} data={data || []} isReservation />
     </div>
   );
 };

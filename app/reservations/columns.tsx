@@ -21,13 +21,27 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { JSX } from "react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export type Rental = {
   id: string;
-  pickup: string;
-  return: string;
-  carType: string;
-  client: string;
+  pickup: { date: string; time: string; branch: string };
+  return: { date: string; time: string; branch: string };
+  carNumber: string;
+  carType: {
+    type: string;
+    carname: string;
+  };
+  client: {
+    name: string;
+    email: string;
+    phone: string;
+  };
   totalPrice: number;
   status: "Collected" | "Confirmed" | "Completed" | "Pending" | "No Show";
 };
@@ -82,18 +96,101 @@ export const columns: ColumnDef<Rental>[] = [
   {
     accessorKey: "pickup",
     header: "Pickup",
+    cell: ({ row }) => (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex flex-col cursor-pointer">
+              <div className="font-medium">
+                {new Date(row.original.pickup.date).toLocaleDateString("en-GB")}{" "}
+                ...
+              </div>
+              <div className="text-muted-foreground text-sm">
+                {row.original.pickup.branch}
+              </div>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent
+            side="bottom"
+            align="center"
+            className="p-2 text-sm bg-white text-black shadow-md rounded-md border"
+          >
+            <div className="font-semibold">Pickup Details</div>
+            <div>Date: {row.original.pickup.date}</div>
+            <div>Time: {row.original.pickup.time}</div>
+            <div>Branch: {row.original.pickup.branch}</div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    ),
   },
   {
     accessorKey: "return",
     header: "Return",
+    cell: ({ row }) => (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex flex-col cursor-pointer">
+              <div className="font-medium">
+                {new Date(row.original.return.date).toLocaleDateString("en-GB")}{" "}
+                ...
+              </div>
+              <div className="text-muted-foreground text-sm">
+                {row.original.return.branch}
+              </div>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent
+            side="bottom"
+            align="center"
+            className="p-2 text-sm bg-white text-black shadow-md rounded-md border"
+          >
+            <div className="font-semibold">Return Details</div>
+            <div>Date: {row.original.return.date}</div>
+            <div>Time: {row.original.return.time}</div>
+            <div>Branch: {row.original.return.branch}</div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    ),
+  },
+  {
+    accessorKey: "carNumber",
+    header: "Car Number",
   },
   {
     accessorKey: "carType",
+    accessorFn: (row) => row.carType.carname,
     header: "Car Type",
+    filterFn: (row, columnId, filterValue) => {
+      return row.original.carType.carname
+        .toLowerCase()
+        .includes(filterValue.toLowerCase());
+    },
+    cell: ({ row }) => {
+      const carType = row.original.carType;
+      return (
+        <div className="flex flex-col">
+          <div className="font-medium">{carType.carname}</div>
+          <div className="text-muted-foreground text-sm">{carType.type}</div>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "client",
     header: "Client",
+    cell: ({ row }) => {
+      const client = row.original.client;
+      return (
+        <div className="flex flex-col">
+          <div className="font-medium">{client.name}</div>
+          <div className="text-muted-foreground text-sm">{client.email}</div>
+          <div className="text-muted-foreground text-sm">{client.phone}</div>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "totalPrice",
