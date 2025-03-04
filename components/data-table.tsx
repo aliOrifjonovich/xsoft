@@ -60,7 +60,7 @@ export function DataTable<TData, TValue>({
 
   const filteredData = React.useMemo(() => {
     if (!isReservation || !dateRange?.from || !dateRange?.to) return data;
-    return data.filter((item: any) => {
+    return data.filter((item) => {
       const rentalItem = item as RentalData;
       const pickupDate = parseISO(rentalItem.pickup.date);
       const returnDate = parseISO(rentalItem.return.date);
