@@ -62,8 +62,8 @@ export function DataTable<TData, TValue>({
     if (!isReservation || !dateRange?.from || !dateRange?.to) return data;
     return data.filter((item: any) => {
       const rentalItem = item as RentalData;
-      const pickupDate = parseISO(item.pickup.date);
-      const returnDate = parseISO(item.return.date);
+      const pickupDate = parseISO(rentalItem.pickup.date);
+      const returnDate = parseISO(rentalItem.return.date);
       return (
         isWithinInterval(pickupDate, {
           start: dateRange.from ?? new Date(),
