@@ -41,6 +41,10 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   isReservation?: boolean;
 }
+interface RentalData {
+  pickup: { date: string };
+  return: { date: string };
+}
 
 export function DataTable<TData, TValue>({
   columns,
@@ -57,6 +61,7 @@ export function DataTable<TData, TValue>({
   const filteredData = React.useMemo(() => {
     if (!isReservation || !dateRange?.from || !dateRange?.to) return data;
     return data.filter((item: any) => {
+      const rentalItem = item as RentalData;
       const pickupDate = parseISO(item.pickup.date);
       const returnDate = parseISO(item.return.date);
       return (

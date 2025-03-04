@@ -1,12 +1,10 @@
 import React from "react";
 import { SidebarTrigger } from "./ui/sidebar";
 import { Separator } from "./ui/separator";
-import LanguageSelection from "./LanguageSelection";
+// import LanguageSelection from "./LanguageSelection";
 import { Bell, CheckCheck, Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useTranslations } from "next-intl";
 

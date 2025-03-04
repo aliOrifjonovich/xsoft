@@ -9,7 +9,6 @@ import {
   GalleryVerticalEnd,
   ShoppingCart,
   Users,
-  UsersRound,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
