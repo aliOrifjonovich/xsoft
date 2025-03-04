@@ -115,7 +115,7 @@ const Header = () => {
               </PopoverContent>
             </Popover>
 
-            <LanguageSelection />
+            {/* <LanguageSelection /> */}
           </div>
         </div>
       </header>
