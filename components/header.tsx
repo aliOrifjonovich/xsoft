@@ -1,10 +1,12 @@
 import React from "react";
 import { SidebarTrigger } from "./ui/sidebar";
 import { Separator } from "./ui/separator";
-// import LanguageSelection from "./LanguageSelection";
+import LanguageSelection from "./LanguageSelection";
 import { Bell, CheckCheck, Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useTranslations } from "next-intl";
 
@@ -26,7 +28,7 @@ const Header = () => {
           <div className="flex items-center gap-4">
             <Popover>
               <PopoverTrigger asChild>
-                <Button className="cursor-pointer  relative rounded-full m-4">
+                <Button className="cursor-pointer  relative rounded-full">
                   <span className="text-white font-semibold absolute -top-2 -right-2 text-xs border-2 border-red-600 rounded-full w-4 h-4 flex items-center justify-center bg-red-600">
                     3
                   </span>

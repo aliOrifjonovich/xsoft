@@ -5,10 +5,9 @@ import {
   CalendarSync,
   Car,
   Command,
-  Contact,
   GalleryVerticalEnd,
   ShoppingCart,
-  Users,
+  UsersRound,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -49,6 +48,21 @@ const data = {
         },
       ],
     },
+    {
+      title: "Users",
+      icon: UsersRound,
+      isActive: false,
+      items: [
+        {
+          title: "Clients",
+          url: "/clients",
+        },
+        {
+          title: "Staffs",
+          url: "/users",
+        },
+      ],
+    },
   ],
   navSecondary: [
     {
@@ -67,18 +81,6 @@ const data = {
       title: "Schedule",
       url: "/schedule",
       icon: CalendarSync,
-      isActive: true,
-    },
-    {
-      title: "Staffs",
-      url: "/users",
-      icon: Contact,
-      isActive: true,
-    },
-    {
-      title: "Clients",
-      url: "/clients",
-      icon: Users,
       isActive: true,
     },
     // {
