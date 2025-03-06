@@ -34,7 +34,7 @@ const User: FC<UserProps> = ({ data }) => {
         </Breadcrumb>
         <Button className="flex gap-2 cursor-pointer">
           <Plus />
-          Xodim Qo'shish
+          Xodim Qo&apos;shish
         </Button>
       </div>
       <DataTable columns={columns} data={data || []} searchcolumns="fullname" />

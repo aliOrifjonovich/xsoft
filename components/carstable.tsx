@@ -37,20 +37,17 @@ import {
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
 } from "./ui/pagination";
 
-interface CarsTableProps<TData, TValue> {
+interface CarsTableProps {
   data?: Vehicle[];
 }
 
-export default function CarsTable<TData, TValue>({
-  data = [],
-}: CarsTableProps<TData, TValue>) {
+export default function CarsTable({ data = [] }: CarsTableProps) {
   const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
   const [expandedRows, setExpandedRows] = React.useState<string[]>([]);
   const [filterText, setFilterText] = React.useState("");
