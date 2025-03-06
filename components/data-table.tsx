@@ -40,6 +40,7 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   isReservation?: boolean;
+  searchcolumns?: string | undefined;
 }
 interface RentalData {
   pickup: { date: string };
@@ -50,6 +51,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   isReservation,
+  searchcolumns,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -92,20 +94,24 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-hidden w-full">
         <div className="flex justify-between items-center p-2 gap-4">
           <Input
-            placeholder="Filter car name..."
+            placeholder={`Search by ${searchcolumns ?? "default value"}`}
             value={
-              (table.getColumn("carType")?.getFilterValue() as string) ?? ""
+              (table
+                .getColumn(`${searchcolumns}`)
+                ?.getFilterValue() as string) ?? ""
             }
             onChange={(event) =>
-              table.getColumn("carType")?.setFilterValue(event.target.value)
+              table
+                .getColumn(`${searchcolumns}`)
+                ?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
-          {isReservation && (
-            <div className="flex flex-row gap-2">
+          <div className="flex flex-row gap-2">
+            {isReservation && (
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -142,9 +148,9 @@ export function DataTable<TData, TValue>({
                   />
                 </PopoverContent>
               </Popover>
-              <DataTableViewOptions table={table} />
-            </div>
-          )}
+            )}
+            <DataTableViewOptions table={table} />
+          </div>
         </div>
         <Table>
           <TableHeader>

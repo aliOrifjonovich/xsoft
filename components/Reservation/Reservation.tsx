@@ -35,7 +35,12 @@ const Reservation: FC<ReservationProps> = ({ data }) => {
           Add Reservation
         </Button>
       </div>
-      <DataTable columns={columns} data={data || []} isReservation />
+      <DataTable
+        columns={columns}
+        data={data || []}
+        searchcolumns="carType"
+        isReservation
+      />
     </div>
   );
 };

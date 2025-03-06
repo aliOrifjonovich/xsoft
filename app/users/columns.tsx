@@ -1,7 +1,13 @@
 "use client";
-
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+import {
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  CheckCircle,
+  Clock,
+  Ban,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,17 +17,45 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { JSX } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DataTableColumnHeader } from "@/components/DataTableColumnHeader";
 
-export type Payment = {
+export type Staff = {
   id: string;
-  amount: number;
-  status: "pending" | "processing" | "success" | "failed";
-  email: string;
+  photo: string;
+  fullname: string;
+  dob: string;
+  gender: "Male" | "Female";
+  phone: string;
+  position: string;
+  employmentType: "Full-time" | "Part-time" | "Contract";
+  hireDate: string;
+  workLocation: string;
+  salary: number;
+  workStatus: "Active" | "Ta'tilda" | "Bo'shagan";
 };
 
-export const columns: ColumnDef<Payment>[] = [
+const statusStyles: Record<
+  Staff["workStatus"],
+  { bg: string; icon: JSX.Element }
+> = {
+  Active: {
+    bg: "bg-green-500 text-white",
+    icon: <CheckCircle className="w-4 h-4" />,
+  },
+  "Ta'tilda": {
+    bg: "bg-yellow-500 text-white",
+    icon: <Clock className="w-4 h-4" />,
+  },
+  "Bo'shagan": {
+    bg: "bg-red-500 text-white",
+    icon: <Ban className="w-4 h-4" />,
+  },
+};
+
+export const columns: ColumnDef<Staff>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -45,34 +79,87 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "photo",
+    header: "Photo",
+    cell: ({ row }) => (
+      <Image
+        src={row.original.photo}
+        alt="Staff Photo"
+        width={40}
+        height={40}
+        className="rounded-full object-cover"
+      />
+    ),
   },
   {
-    accessorKey: "email",
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Email" />;
-    },
+    accessorKey: "fullname",
+    header: "Full Name",
+  },
+  // {
+  //   accessorKey: "dob",
+  //   header: "Date of Birth",
+  //   cell: ({ row }) => new Date(row.original.dob).toLocaleDateString("en-GB"),
+  // },
+  {
+    accessorKey: "gender",
+    header: "Gender",
   },
   {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
+    accessorKey: "phone",
+    header: "Phone Number",
+  },
+  {
+    accessorKey: "position",
+    header: "Position",
+  },
+  {
+    accessorKey: "employmentType",
+    header: "Employment Type",
+  },
+  {
+    accessorKey: "hireDate",
+    header: "Hire Date",
+    cell: ({ row }) =>
+      new Date(row.original.hireDate).toLocaleDateString("en-GB"),
+  },
+  {
+    accessorKey: "workLocation",
+    header: "Work Location",
+  },
+  {
+    accessorKey: "salary",
+    header: "Salary",
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
+      }).format(row.original.salary);
+      return <span className="font-medium">{formatted}</span>;
+    },
+  },
+  {
+    accessorKey: "workStatus",
+    header: "Work Status",
+    cell: ({ row }) => {
+      const status = row.original.workStatus;
+      return (
+        <span
+          className={cn(
+            "w-max px-3 py-1 rounded-sm text-xs font-bold uppercase flex items-center gap-2",
+            statusStyles[status].bg
+          )}
+        >
+          {statusStyles[status].icon}
+          {status}
+        </span>
+      );
     },
   },
   {
     id: "actions",
     accessorKey: "Actions",
     cell: ({ row }) => {
-      const payment = row.original;
-
+      const staff = row.original;
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -84,13 +171,18 @@ export const columns: ColumnDef<Payment>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => console.log("Update:", staff.id)}
+              className="flex items-center gap-2"
             >
-              Copy payment ID
+              <Pencil className="h-4 w-4" /> Update
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => console.log("Delete:", staff.id)}
+              className="flex items-center gap-2 text-red-500"
+            >
+              <Trash2 className="h-4 w-4" /> Delete
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
