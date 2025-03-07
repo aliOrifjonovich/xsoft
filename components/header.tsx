@@ -12,7 +12,7 @@ const Header = () => {
   const t = useTranslations("HomePage");
   return (
     <>
-      <header className="flex  h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+      <header className="sticky top-0 z-50  bg-white shadow-md w-full flex  h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
         <div className="flex justify-between items-center gap-2 px-4 w-full">
           <div className="flex items-center ">
             <SidebarTrigger className="-ml-1" />
