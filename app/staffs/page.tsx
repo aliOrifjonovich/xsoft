@@ -1,7 +1,6 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import Header from "@/components/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import User from "@/components/Staffs/User";
 import { Staff } from "./columns";
 import Staffs from "@/components/Staffs/User";
 

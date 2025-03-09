@@ -1,4 +1,5 @@
 import { ImageUp } from "lucide-react";
+import Image from "next/image";
 import React from "react";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 
@@ -39,7 +40,9 @@ const Imageuploades: React.FC<ImageUploadProps> = ({ value, onChange }) => {
               <ImageUp />
             </button>
             &nbsp;
-            <button onClick={onImageRemoveAll}>Remove all images</button>
+            <button onClick={onImageRemoveAll} type="button">
+              Remove all images
+            </button>
             <div
               className="grid gap-4"
               style={{
@@ -48,7 +51,12 @@ const Imageuploades: React.FC<ImageUploadProps> = ({ value, onChange }) => {
             >
               {imageList.map((image, index) => (
                 <div key={index} className="image-item mt-4 ">
-                  <img src={image.dataURL} alt="" width="100" />
+                  /* eslint-disable @next/next/no-img-element */
+                  <img
+                    src={image.dataURL !== undefined ? image.dataURL : ""}
+                    alt="Uploaded image"
+                    width="100"
+                  />
                   <div className="image-item__btn-wrapper">
                     <button onClick={() => onImageUpdate(index)}>Update</button>
                     <button onClick={() => onImageRemove(index)}>Remove</button>
