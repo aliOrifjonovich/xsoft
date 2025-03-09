@@ -22,14 +22,16 @@ import {
   SelectValue,
 } from "./ui/select";
 import { Textarea } from "./ui/textarea";
+import dynamic from "next/dynamic";
+import Imageuploades from "./ui/imageuploades";
 
-interface ICreateFormProps<T extends ZodType<any, any>> {
+interface ICreateFormProps<T extends ZodType> {
   inputs: FormInput<T>[];
   formSchema: T;
   pageTitle?: string;
 }
 
-const CreateForm = <T extends ZodType<any, any>>({
+const CreateForm = <T extends ZodType>({
   inputs,
   formSchema,
   pageTitle,
@@ -43,6 +45,10 @@ const CreateForm = <T extends ZodType<any, any>>({
           : input.fields.map((field) => [field.name, ""])
       )
     ) as z.infer<T>,
+  });
+
+  const MultiSelect = dynamic(() => import("./ui/multi-select"), {
+    ssr: false,
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -124,7 +130,7 @@ const CreateForm = <T extends ZodType<any, any>>({
                           <SelectValue placeholder={inputObj.placeholder} />
                         </SelectTrigger>
                         <SelectContent>
-                          {inputObj.options?.map((option, index) => (
+                          {inputObj.options?.map((option) => (
                             <SelectItem key={option.value} value={option.value}>
                               <div className="flex items-center space-x-2">
                                 {option.color && (
@@ -223,8 +229,59 @@ const CreateForm = <T extends ZodType<any, any>>({
               </div>
             );
           }
+          if (inputObj.type === "multi_select" && inputObj.options) {
+            return (
+              <FormField
+                key={inputObj.name}
+                control={form.control}
+                name={inputObj.name}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{inputObj.label}</FormLabel>
+                    <FormControl>
+                      <MultiSelect
+                        options={inputObj.options ?? []}
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            );
+          }
+          if (inputObj.type === "multi_image") {
+            return (
+              <FormField
+                key={inputObj.name}
+                control={form.control}
+                name={inputObj.name}
+                render={({ field }) => {
+                  console.log("field", field);
+                  return (
+                    <FormItem>
+                      <FormLabel>{inputObj.label}</FormLabel>
+                      <FormControl>
+                        <Imageuploades
+                          name={inputObj.name}
+                          value={field.value || []}
+                          onChange={(imageList) => field.onChange(imageList)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+            );
+          }
+
+          return null;
         })}
-        <Button type="submit">Submit</Button>
+        <Button type="submit" className="w-full">
+          Submit
+        </Button>
       </form>
     </Form>
   );

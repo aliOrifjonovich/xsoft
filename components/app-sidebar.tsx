@@ -72,7 +72,7 @@ const data = {
     },
     {
       title: "Staffs",
-      url: "/users",
+      url: "/staffs",
       icon: Contact,
       isActive: true,
     },

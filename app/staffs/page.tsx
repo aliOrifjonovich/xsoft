@@ -1,8 +1,9 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import Header from "@/components/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import User from "@/components/User/User";
+import User from "@/components/Staffs/User";
 import { Staff } from "./columns";
+import Staffs from "@/components/Staffs/User";
 
 async function getData(): Promise<Staff[]> {
   return [
@@ -86,7 +87,7 @@ export default async function Page() {
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <User data={data} />
+        <Staffs data={data} />
       </SidebarInset>
     </SidebarProvider>
   );

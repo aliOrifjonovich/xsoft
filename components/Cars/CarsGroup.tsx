@@ -38,7 +38,7 @@ const CarsGroup: FC<CarsGroupProps> = ({ data }) => {
         <Button
           className="flex gap-2 cursor-pointer"
           onClick={() => {
-            router.push("/create-car");
+            router.push("/cars/create-car");
           }}
         >
           <Plus />

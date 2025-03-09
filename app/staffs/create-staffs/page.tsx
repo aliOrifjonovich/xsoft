@@ -1,15 +1,15 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import CreateCar from "@/components/Cars/CreateCar";
 import Header from "@/components/header";
+import CreateStaff from "@/components/Staffs/CreateStaffs";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-export default async function Clients() {
+export default async function CreateStaffs() {
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <CreateCar />
+        <CreateStaff />
       </SidebarInset>
     </SidebarProvider>
   );

@@ -1,15 +1,15 @@
 import { AppSidebar } from "@/components/app-sidebar";
+import CreateClient from "@/components/Client/CreateClients";
 import Header from "@/components/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import User from "@/components/Staffs/User";
 
-export default function Page() {
+export default async function Clients() {
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <User />
+        <CreateClient />
       </SidebarInset>
     </SidebarProvider>
   );

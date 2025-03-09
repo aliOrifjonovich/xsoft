@@ -38,7 +38,10 @@ const formSchema = z.object({
   description: z.string().min(10),
   images: z
     .any()
-    .refine((files) => files.length > 0, "Please upload at least one image"),
+    .refine(
+      (files) => files instanceof FileList && files.length > 0,
+      "Please upload at least one image"
+    ),
 });
 
 const inputs: FormInput<typeof formSchema>[] = [
@@ -239,14 +242,14 @@ const inputs: FormInput<typeof formSchema>[] = [
   },
 ];
 
-const CreateCar = () => {
+const CreateStaff = () => {
   return (
     <CreateForm<typeof formSchema>
       inputs={inputs}
       formSchema={formSchema}
-      pageTitle="Yangi avtomobil qo'shish"
+      pageTitle="Yangi xodimlarni qo'shish"
     />
   );
 };
 
-export default CreateCar;
+export default CreateStaff;

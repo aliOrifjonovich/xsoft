@@ -10,14 +10,16 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "../ui/breadcrumb";
-import { columns, Staff } from "@/app/users/columns";
+import { columns, Staff } from "@/app/staffs/columns";
 import { Button } from "../ui/button";
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface UserProps {
   data?: Staff[];
 }
-const User: FC<UserProps> = ({ data }) => {
+const Staffs: FC<UserProps> = ({ data }) => {
+  const router = useRouter();
   return (
     <div className="px-4 py-2 flex flex-col gap-4">
       <div className="flex justify-between items-center">
@@ -32,7 +34,12 @@ const User: FC<UserProps> = ({ data }) => {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <Button className="flex gap-2 cursor-pointer">
+        <Button
+          className="flex gap-2 cursor-pointer"
+          onClick={() => {
+            router.push("/staffs/create-staffs");
+          }}
+        >
           <Plus />
           Xodim Qo&apos;shish
         </Button>
@@ -42,4 +49,4 @@ const User: FC<UserProps> = ({ data }) => {
   );
 };
 
-export default User;
+export default Staffs;
