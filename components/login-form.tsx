@@ -25,6 +25,7 @@ export function LoginForm({
   // Function to handle login
   const onSubmit = (data: LoginFormInputs) => {
     const fakeToken = "123456abcdef";
+    console.log(data);
 
     // Save token in cookies (expires in 1 day)
     Cookies.set("token", fakeToken, { expires: 1, secure: true });
