@@ -1,5 +1,4 @@
 import { ImageUp } from "lucide-react";
-import Image from "next/image";
 import React from "react";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 
