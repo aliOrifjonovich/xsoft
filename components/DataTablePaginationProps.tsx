@@ -28,8 +28,6 @@ export function CombinedPagination<TData>({
   const currentPage = table.getState().pagination.pageIndex + 1;
   const maxVisiblePages = 10;
 
-  console.log("table", totalPages);
-
   const getPageNumbers = () => {
     if (totalPages <= maxVisiblePages) {
       return Array.from({ length: totalPages }, (_, i) => i + 1);

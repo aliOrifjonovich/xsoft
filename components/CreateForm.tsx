@@ -154,8 +154,6 @@ const CreateForm = <T extends ZodType>({
           }
 
           if ("fields" in inputGroup) {
-            console.log("hello world", inputGroup.title);
-
             return (
               <div
                 key={index}
@@ -258,7 +256,6 @@ const CreateForm = <T extends ZodType>({
                 control={form.control}
                 name={inputObj.name}
                 render={({ field }) => {
-                  console.log("field", field);
                   return (
                     <FormItem>
                       <FormLabel>{inputObj.label}</FormLabel>

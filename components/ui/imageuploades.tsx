@@ -50,7 +50,6 @@ const Imageuploades: React.FC<ImageUploadProps> = ({ value, onChange }) => {
             >
               {imageList.map((image, index) => (
                 <div key={index} className="image-item mt-4 ">
-                  /* eslint-disable @next/next/no-img-element */
                   <img
                     src={image.dataURL !== undefined ? image.dataURL : ""}
                     alt="Uploaded image"
