@@ -1,4 +1,4 @@
-import { ImageUp } from "lucide-react";
+import { ImageUp, PencilLine, Trash2 } from "lucide-react";
 import React from "react";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 
@@ -22,7 +22,7 @@ const Imageuploades: React.FC<ImageUploadProps> = ({ value, onChange }) => {
         {({
           imageList,
           onImageUpload,
-          onImageRemoveAll,
+          // onImageRemoveAll,
           onImageUpdate,
           onImageRemove,
           isDragging,
@@ -39,9 +39,9 @@ const Imageuploades: React.FC<ImageUploadProps> = ({ value, onChange }) => {
               <ImageUp />
             </button>
             &nbsp;
-            <button onClick={onImageRemoveAll} type="button">
+            {/* <button onClick={onImageRemoveAll} type="button">
               Remove all images
-            </button>
+            </button> */}
             <div
               className="grid gap-4"
               style={{
@@ -49,15 +49,30 @@ const Imageuploades: React.FC<ImageUploadProps> = ({ value, onChange }) => {
               }}
             >
               {imageList.map((image, index) => (
-                <div key={index} className="image-item mt-4 ">
+                <div
+                  key={index}
+                  className="image-item mt-4 flex flex-col gap-2 "
+                >
                   <img
                     src={image.dataURL !== undefined ? image.dataURL : ""}
                     alt="Uploaded image"
                     width="100"
                   />
-                  <div className="image-item__btn-wrapper">
-                    <button onClick={() => onImageUpdate(index)}>Update</button>
-                    <button onClick={() => onImageRemove(index)}>Remove</button>
+                  <div className="image-item__btn-wrapper flex gap-2">
+                    <button
+                      onClick={() => onImageUpdate(index)}
+                      className="cursor-pointer"
+                      type="button"
+                    >
+                      <PencilLine />
+                    </button>
+                    <button
+                      onClick={() => onImageRemove(index)}
+                      type="button"
+                      className="cursor-pointer"
+                    >
+                      <Trash2 />
+                    </button>
                   </div>
                 </div>
               ))}

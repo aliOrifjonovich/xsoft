@@ -7,6 +7,7 @@ import {
   Command,
   Contact,
   GalleryVerticalEnd,
+  Landmark,
   ShoppingCart,
   Users,
 } from "lucide-react";
@@ -42,7 +43,7 @@ const data = {
       items: [
         {
           title: "Categories",
-          url: "/categories",
+          url: "/category",
         },
         {
           title: "Cars",
@@ -80,6 +81,12 @@ const data = {
       title: "Clients",
       url: "/clients",
       icon: Users,
+      isActive: true,
+    },
+    {
+      title: "Filiallar",
+      url: "/branch",
+      icon: Landmark,
       isActive: true,
     },
   ],

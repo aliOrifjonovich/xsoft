@@ -274,8 +274,8 @@ export default function CarsTable({ data = [] }: CarsTableProps) {
                 </TableRow>
 
                 {expandedRows.includes(car.id) && (
-                  <TableRow className="w-full border border-solid border-red-500">
-                    <TableCell colSpan={8} className="p-0  ">
+                  <TableRow className="w-full bg-muted hover:bg-trnasparent">
+                    <TableCell colSpan={12} className="p-0">
                       <div className="p-6">
                         <Tabs defaultValue="details" className="w-full ">
                           <TabsList className="mb-4">

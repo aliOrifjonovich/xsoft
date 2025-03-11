@@ -9,8 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import Cookies from "js-cookie";
+import { post, request } from "@/lib/request";
+
 interface LoginFormInputs {
-  username: string;
+  phonenumber: string;
   password: string;
 }
 
@@ -19,18 +21,31 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"form">) {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { register, handleSubmit } = useForm<LoginFormInputs>();
   const router = useRouter();
 
   // Function to handle login
-  const onSubmit = (data: LoginFormInputs) => {
-    const fakeToken = "123456abcdef";
-    console.log(data);
+  const onSubmit = async (data: LoginFormInputs) => {
+    setLoading(true);
+    try {
+      const { result, ok } = await post<{ access: string }>("/token/", {
+        identifier: data.phonenumber,
+        password: data.password,
+      });
 
-    // Save token in cookies (expires in 1 day)
-    Cookies.set("token", fakeToken, { expires: 1, secure: true });
-
-    router.push("/");
+      if (ok) {
+        Cookies.set("token", result.access, { expires: 1, secure: true });
+        router.push("/");
+      } else {
+        alert("Login failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -42,18 +57,18 @@ export function LoginForm({
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Login to your account</h1>
         <p className="text-muted-foreground text-sm text-balance">
-          Enter your username below to login to your account
+          Enter your phone number and password to access your account.
         </p>
       </div>
       <div className="grid gap-6">
-        {/* Username Field */}
+        {/* Phone Number Field */}
         <div className="grid gap-3">
-          <Label htmlFor="username">Username</Label>
+          <Label htmlFor="phonenumber">Telefon raqam</Label>
           <Input
-            id="username"
+            id="phonenumber"
             type="text"
-            placeholder="Example: xsoft"
-            {...register("username", { required: true })}
+            placeholder="+99890 123 45 67"
+            {...register("phonenumber", { required: true })}
           />
         </div>
 
@@ -85,8 +100,8 @@ export function LoginForm({
         </div>
 
         {/* Submit Button */}
-        <Button type="submit" className="w-full">
-          Login
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
         </Button>
       </div>
     </form>

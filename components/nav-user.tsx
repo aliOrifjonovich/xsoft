@@ -24,6 +24,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Button } from "./ui/button";
+import Cookies from "js-cookie";
 
 export function NavUser({
   user,
@@ -98,8 +100,16 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <LogOut />
-              Log out
+              <Button
+                onClick={() => {
+                  Cookies.remove("token", { path: "/" });
+                  window.location.href = "/login";
+                }}
+                className="bg-transparent text-destructive hover:bg-transparent hover:text-destructive-foreground cursor-pointer"
+              >
+                <LogOut />
+                Log out
+              </Button>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

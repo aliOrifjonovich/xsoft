@@ -16,6 +16,8 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export function NavMain({
   items,
@@ -31,6 +33,7 @@ export function NavMain({
     }[];
   }[];
 }) {
+  const pathname = usePathname();
   return (
     <SidebarGroup>
       <SidebarMenu className="cursor-pointer ">
@@ -44,10 +47,13 @@ export function NavMain({
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton tooltip={item.title}>
-                  <a href={item.url} className="flex items-center gap-2">
+                  <Link
+                    href={item.url ?? "#"}
+                    className="flex items-center gap-2"
+                  >
                     {item.icon && <item.icon />}
                     <span className="text-md font-semibold">{item.title}</span>
-                  </a>
+                  </Link>
                   {item.items && (
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                   )}
@@ -58,12 +64,15 @@ export function NavMain({
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
-                          <span className="text-md text-muted-foreground font-semibold">
+                      <SidebarMenuSubButton
+                        asChild
+                        isActive={subItem.url === pathname}
+                      >
+                        <Link href={subItem.url}>
+                          <span className={`text-md  font-semibold `}>
                             {subItem.title}
                           </span>
-                        </a>
+                        </Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   ))}

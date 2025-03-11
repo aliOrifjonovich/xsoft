@@ -9,6 +9,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export function NavProjects({
   projects,
@@ -19,18 +21,24 @@ export function NavProjects({
     icon: LucideIcon;
   }[];
 }) {
+  const pathname = usePathname();
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Pages</SidebarGroupLabel>
+
       <SidebarMenu>
         {projects.map((item) => (
           <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton tooltip={item.title}>
-              <a href={item.url} className="flex items-center gap-2">
-                {item.icon && <item.icon />}
+            <Link href={item.url}>
+              <SidebarMenuButton
+                tooltip={item.title}
+                isActive={item.url === pathname}
+                className=" flex items-center gap-2 cursor-pointer"
+              >
+                <span>{item.icon && <item.icon />}</span>
                 <span className="text-md font-semibold">{item.title}</span>
-              </a>
-            </SidebarMenuButton>
+              </SidebarMenuButton>
+            </Link>
           </SidebarMenuItem>
         ))}
       </SidebarMenu>

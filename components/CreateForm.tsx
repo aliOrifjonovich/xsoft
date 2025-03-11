@@ -24,6 +24,11 @@ import {
 import { Textarea } from "./ui/textarea";
 import dynamic from "next/dynamic";
 import Imageuploades from "./ui/imageuploades";
+import { useState } from "react";
+import { format } from "date-fns";
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 interface ICreateFormProps<T extends ZodType> {
   inputs: FormInput<T>[];
@@ -36,6 +41,18 @@ const CreateForm = <T extends ZodType>({
   formSchema,
   pageTitle,
 }: ICreateFormProps<T>) => {
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
+
+  const years = Array.from(
+    { length: 50 },
+    (_, i) => new Date().getFullYear() - i
+  ); // Last 50 years
+  const months = Array.from({ length: 12 }, (_, i) =>
+    format(new Date(2000, i), "MMMM")
+  ); // Month names
+
   const form = useForm<z.infer<T>>({
     resolver: zodResolver(formSchema),
     defaultValues: Object.fromEntries(
@@ -157,7 +174,7 @@ const CreateForm = <T extends ZodType>({
             return (
               <div
                 key={index}
-                className="space-y-4 border-2 border-solid border-gray-500 rounded-md p-4"
+                className="space-y-4 border-2 border-solid border-gray-400 rounded-md p-4"
               >
                 <h2 className="text-lg font-semibold">{inputGroup.title}</h2>
                 <div
@@ -276,7 +293,7 @@ const CreateForm = <T extends ZodType>({
 
           return null;
         })}
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full cursor-pointer">
           Submit
         </Button>
       </form>

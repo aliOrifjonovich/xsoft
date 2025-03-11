@@ -156,7 +156,33 @@ const inputs: FormInput<typeof formSchema>[] = [
       },
     ],
   },
-
+  {
+    type: "multi_select",
+    label: "Features",
+    placeholder: "features",
+    name: "features",
+    options: [
+      { label: "Air conditioning", value: "air conditioning" },
+      { label: "Heated seats", value: "heated seats" },
+      { label: "Leather seats", value: "leather seats" },
+      { label: "Navigation system", value: "navigation system" },
+      { label: "Bluetooth", value: "bluetooth" },
+      { label: "Sunroof", value: "sunroof" },
+      { label: "Heated steering wheel", value: "heated steering wheel" },
+      { label: "Leather steering wheel", value: "leather steering wheel" },
+    ],
+  },
+  {
+    type: "select",
+    label: "Ijaraviy holati",
+    name: "rentalStatus",
+    placeholder: "Bo'sh",
+    options: [
+      { label: "✅ Bo'sh", value: "bo'sh" },
+      { label: "🚗 Ijarada", value: "ijarada" },
+      { label: "📅 Reserv qilingan", value: "reserv qilingan" },
+    ],
+  },
   {
     title: "Ijaraviy narxlari",
     fields: [
@@ -174,18 +200,6 @@ const inputs: FormInput<typeof formSchema>[] = [
         placeholder: "10000",
         name: "depozite",
       },
-    ],
-  },
-
-  {
-    type: "select",
-    label: "Ijaraviy holati",
-    name: "rentalStatus",
-    placeholder: "Bo'sh",
-    options: [
-      { label: "✅ Bo'sh", value: "bo'sh" },
-      { label: "🚗 Ijarada", value: "ijarada" },
-      { label: "📅 Reserv qilingan", value: "reserv qilingan" },
     ],
   },
 
@@ -214,22 +228,6 @@ const inputs: FormInput<typeof formSchema>[] = [
     label: "Description",
     placeholder: "desc",
     name: "description",
-  },
-  {
-    type: "multi_select",
-    label: "Features",
-    placeholder: "features",
-    name: "features",
-    options: [
-      { label: "Air conditioning", value: "air conditioning" },
-      { label: "Heated seats", value: "heated seats" },
-      { label: "Leather seats", value: "leather seats" },
-      { label: "Navigation system", value: "navigation system" },
-      { label: "Bluetooth", value: "bluetooth" },
-      { label: "Sunroof", value: "sunroof" },
-      { label: "Heated steering wheel", value: "heated steering wheel" },
-      { label: "Leather steering wheel", value: "leather steering wheel" },
-    ],
   },
 
   {
