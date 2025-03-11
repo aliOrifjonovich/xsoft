@@ -4,7 +4,7 @@ const BASE_URL = "http://192.168.50.20:8000/api/v1";
 
 interface RequestConfig {
   method?: "GET" | "POST" | "PUT" | "DELETE";
-  body?: any;
+  body?: unknown;
   headers?: HeadersInit;
 }
 
@@ -48,13 +48,16 @@ export const getById = <T>(
   headers: HeadersInit = {}
 ) => request<T>(`${url}/${id}`, { method: "GET", headers });
 
-export const post = <T>(url: string, body: any, headers: HeadersInit = {}) =>
-  request<T>(url, { method: "POST", body, headers });
+export const post = <T>(
+  url: string,
+  body: unknown,
+  headers: HeadersInit = {}
+) => request<T>(url, { method: "POST", body, headers });
 
 export const put = <T>(
   url: string,
   id: number | string,
-  body: any,
+  body: unknown,
   headers: HeadersInit = {}
 ) => request<T>(`${url}/${id}`, { method: "PUT", body, headers });
 
