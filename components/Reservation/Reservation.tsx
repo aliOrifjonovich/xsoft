@@ -9,8 +9,6 @@ import {
   BreadcrumbSeparator,
 } from "../ui/breadcrumb";
 import { DataTable } from "../data-table";
-import { Button } from "../ui/button";
-import { Plus } from "lucide-react";
 
 interface ReservationProps {
   data?: Rental[];

@@ -1,11 +1,16 @@
 "use client";
 
-import { FC, ReactNode } from "react";
+import { FC } from "react";
 import ReactSelect from "react-select";
 import makeAnimated from "react-select/animated";
 
 interface Option {
-  options: { value: string; label: string; color?: string, icon?: React.ReactNode; }[];
+  options: {
+    value: string;
+    label: string;
+    color?: string;
+    icon?: React.ReactNode;
+  }[];
   value: string[];
   onChange: (values: string[]) => void;
 }
