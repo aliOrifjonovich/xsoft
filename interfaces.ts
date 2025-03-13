@@ -7,7 +7,12 @@ export interface InputInterface<T extends ZodType> {
   type: string;
   inputType?: string;
   placeholder?: string;
-  options?: { value: string; label: string; color?: string }[];
+  options?: {
+    value: string;
+    label: string;
+    color?: string;
+    icon?: React.ReactNode;
+  }[];
 }
 
 export interface InputGroup<T extends ZodType> {

@@ -3,6 +3,19 @@ import { FormInput } from "@/interfaces";
 import React from "react";
 import { z } from "zod";
 import CreateForm from "../CreateForm";
+import {
+  AndroidAuto,
+  AppleCarPlay,
+  AUXInput,
+  BackupCamera,
+  Bluetooth,
+  GPS,
+  HeatedSeats,
+  Panorama,
+  Sensors,
+  USB,
+  USBCharger,
+} from "@/Icons";
 
 const formSchema = z.object({
   brand: z.string().min(1),
@@ -162,14 +175,33 @@ const inputs: FormInput<typeof formSchema>[] = [
     placeholder: "features",
     name: "features",
     options: [
-      { label: "Air conditioning", value: "air conditioning" },
-      { label: "Heated seats", value: "heated seats" },
-      { label: "Leather seats", value: "leather seats" },
-      { label: "Navigation system", value: "navigation system" },
-      { label: "Bluetooth", value: "bluetooth" },
-      { label: "Sunroof", value: "sunroof" },
-      { label: "Heated steering wheel", value: "heated steering wheel" },
-      { label: "Leather steering wheel", value: "leather steering wheel" },
+      {
+        label: "Heat Seats",
+        value: "Heated Seats",
+        icon: <HeatedSeats />,
+      },
+      { label: "Bluetooth", value: "Bluetooth", icon: <Bluetooth /> },
+      { label: "Panarama Tom", value: "Panarama Tom", icon: <Panorama /> },
+      { label: "USB Charger", value: "USB Charger", icon: <USBCharger /> },
+      { label: "USB", value: "USB", icon: <USB /> },
+      { label: "Android Auto", value: "Android Auto", icon: <AndroidAuto /> },
+      {
+        label: "Apple Carplay",
+        value: "Apple Carplay",
+        icon: <AppleCarPlay />,
+      },
+      { label: "Aux input", value: "Aux input", icon: <AUXInput /> },
+      {
+        label: "Backup Camera",
+        value: "Backup Camera",
+        icon: <BackupCamera />,
+      },
+      {
+        label: "Avtomobil Sensorlar",
+        value: "Avtomobil Sensorlar",
+        icon: <Sensors />,
+      },
+      { label: "GPS", value: "GPS", icon: <GPS /> },
     ],
   },
   {

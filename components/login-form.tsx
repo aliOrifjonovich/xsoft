@@ -27,13 +27,15 @@ export function LoginForm({
 
   // Function to handle login
   const onSubmit = async (data: LoginFormInputs) => {
+    // const faketoken = "asdbsk";
+    // Cookies.set("token", faketoken, { expires: 1, secure: true });
+    // router.push("/");
     setLoading(true);
     try {
-      const { result, ok } = await post<{ access: string }>("/token/", {
+      const { result, ok } = await post<{ access: string }>("token/", {
         identifier: data.phonenumber,
         password: data.password,
       });
-
       if (ok) {
         Cookies.set("token", result.access, { expires: 1, secure: true });
         router.push("/");

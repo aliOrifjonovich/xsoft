@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { format, isWithinInterval, parseISO } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Plus } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import {
   ColumnDef,
@@ -35,12 +35,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useRouter } from "next/navigation";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   isReservation?: boolean;
   searchcolumns?: string | undefined;
+  url?: string | undefined;
+  buttonTitle?: string;
 }
 interface RentalData {
   pickup: { date: string };
@@ -52,7 +55,10 @@ export function DataTable<TData, TValue>({
   data,
   isReservation,
   searchcolumns,
+  url,
+  buttonTitle,
 }: DataTableProps<TData, TValue>) {
+  const router = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -150,6 +156,17 @@ export function DataTable<TData, TValue>({
               </Popover>
             )}
             <DataTableViewOptions table={table} />
+            <Button
+              className="flex gap-2 cursor-pointer"
+              onClick={() => {
+                if (url) {
+                  router.push(url);
+                }
+              }}
+            >
+              <Plus />
+              {buttonTitle}
+            </Button>
           </div>
         </div>
         <Table>

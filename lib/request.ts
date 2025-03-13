@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 
-const BASE_URL = "http://192.168.50.20:8000/api/v1";
+const BASE_URL = "https://carmanagement-1-rmyc.onrender.com/api/v1/";
 
 interface RequestConfig {
   method?: "GET" | "POST" | "PUT" | "DELETE";

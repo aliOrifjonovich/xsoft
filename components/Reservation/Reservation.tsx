@@ -32,16 +32,14 @@ const Reservation: FC<ReservationProps> = ({ data }) => {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <Button className="flex gap-2 cursor-pointer">
-          <Plus />
-          Add Reservation
-        </Button>
       </div>
       <DataTable
         columns={columns}
         data={data || []}
         searchcolumns="carType"
         isReservation
+        url=""
+        buttonTitle="Buyurtma qo'shish"
       />
     </div>
   );

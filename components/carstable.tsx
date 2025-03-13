@@ -9,6 +9,7 @@ import {
   MoreHorizontal,
   Pencil,
   Trash2,
+  Plus,
 } from "lucide-react";
 import {
   Table,
@@ -42,17 +43,20 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "./ui/pagination";
+import { useRouter } from "next/navigation";
 
 interface CarsTableProps {
   data?: Vehicle[];
+  buttonTitle?: string;
 }
 
-export default function CarsTable({ data = [] }: CarsTableProps) {
+export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
   const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
   const [expandedRows, setExpandedRows] = React.useState<string[]>([]);
   const [filterText, setFilterText] = React.useState("");
   const [currentPage, setCurrentPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(10);
+  const router = useRouter();
 
   // Status badge colors
   const statusColors: Record<string, string> = {
@@ -154,6 +158,16 @@ export default function CarsTable({ data = [] }: CarsTableProps) {
           onChange={(e) => setFilterText(e.target.value)}
           className="max-w-md border-input"
         />
+
+        <Button
+          className="flex gap-2 cursor-pointer"
+          onClick={() => {
+            router.push("/cars/create-car");
+          }}
+        >
+          <Plus />
+          {buttonTitle}
+        </Button>
       </div>
 
       <div className="border rounded-md">
@@ -177,6 +191,7 @@ export default function CarsTable({ data = [] }: CarsTableProps) {
               <TableHead>License Plate</TableHead>
               <TableHead>Seats</TableHead>
               <TableHead>Transmission</TableHead>
+              <TableHead>Filial</TableHead>
               <TableHead>Rental Price</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Actions</TableHead>
@@ -217,7 +232,10 @@ export default function CarsTable({ data = [] }: CarsTableProps) {
                   </TableCell>
                   <TableCell>
                     <Image
-                      src={car.photo || "/placeholder.svg?height=80&width=120"}
+                      src={
+                        car.details.photos[0] ||
+                        "/placeholder.svg?height=80&width=120"
+                      }
                       alt={`${car.brand} ${car.model}`}
                       width={80}
                       height={60}
@@ -238,6 +256,7 @@ export default function CarsTable({ data = [] }: CarsTableProps) {
                   <TableCell className="capitalize">
                     {car.transmission}
                   </TableCell>
+                  <TableCell className="capitalize">{car.branch}</TableCell>
                   <TableCell>${car.details.rentalPricePerDay} / day</TableCell>
                   <TableCell>
                     <Badge className={getStatusBadgeClass(car.rentalStatus)}>
@@ -527,12 +546,17 @@ export default function CarsTable({ data = [] }: CarsTableProps) {
                                     (feature, index) => (
                                       <div
                                         key={index}
-                                        className="flex items-center gap-2"
+                                        className="flex items-center gap-4"
                                       >
-                                        <div className="h-2 w-2 rounded-full bg-primary"></div>
-                                        <span className="text-sm">
-                                          {feature}
-                                        </span>
+                                        {typeof feature.icon === "string" && (
+                                          <div
+                                            className="w-6 h-6"
+                                            dangerouslySetInnerHTML={{
+                                              __html: feature.icon,
+                                            }}
+                                          />
+                                        )}
+                                        <span>{feature.name}</span>
                                       </div>
                                     )
                                   )}
