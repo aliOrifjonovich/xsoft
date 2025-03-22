@@ -1,13 +1,6 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import {
-  MoreHorizontal,
-  Pencil,
-  Trash2,
-  CheckCircle,
-  Clock,
-  Ban,
-} from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,46 +10,22 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import Image from "next/image";
-import { JSX, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useState } from "react";
 import { ResponsiveModal } from "@/components/Modal";
+import { useRouter } from "next/navigation";
 
-export type Staff = {
+export type BranchesType = {
   id: number;
-  photo: string;
-  fullname: string;
-  dob: Date;
-  gender: "Male" | "Female";
-  phone: string;
-  position: string;
-  workingtype: "Full_time" | "Part_time" | "Contract";
-  hireddate: Date;
-  branch: string;
-  salary: number;
-  workStatus: "Active" | "Vacation" | "Fired";
+  name: string;
+  address: string;
+  year_of_construction: Date;
+  total_area: number;
+  google_map_link: string;
+  yandex_map_link: string;
 };
 
-const statusStyles: Record<
-  Staff["workStatus"],
-  { bg: string; icon: JSX.Element }
-> = {
-  Active: {
-    bg: "bg-green-500 text-white",
-    icon: <CheckCircle className="w-4 h-4" />,
-  },
-  Vacation: {
-    bg: "bg-yellow-500 text-white",
-    icon: <Clock className="w-4 h-4" />,
-  },
-  Fired: {
-    bg: "bg-red-500 text-white",
-    icon: <Ban className="w-4 h-4" />,
-  },
-};
-
-export const columns: ColumnDef<Staff>[] = [
+export const columns: ColumnDef<BranchesType>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -79,90 +48,64 @@ export const columns: ColumnDef<Staff>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  // {
-  //   accessorKey: "photo",
-  //   header: "Photo",
-  //   cell: ({ row }) => (
-  //     <Image
-  //       src={row.original.photo}
-  //       alt="Staff Photo"
-  //       width={40}
-  //       height={40}
-  //       className="rounded-full object-cover"
-  //     />
-  //   ),
-  // },
   {
-    accessorKey: "fullname",
-    header: "Full Name",
+    accessorKey: "name",
+    header: "Branch Nomi",
+    cell: ({ row }) => <div className="font-medium">{row.original.name}</div>,
   },
   {
-    accessorKey: "dob",
-    header: "Date of Birth",
+    accessorKey: "address",
+    header: "Address",
     cell: ({ row }) => (
-      <div className="text-black">{row.original.dob.toString()}</div>
+      <div className="text-muted-foreground">{row.original.address}</div>
     ),
   },
   {
-    accessorKey: "gender",
-    header: "Gender",
+    accessorKey: "year_of_construction",
+    header: "Year of Construction",
+    cell: ({ row }) => (
+      <div className="text-muted-foreground">
+        {row.original.year_of_construction.toString()}
+      </div>
+    ),
+  },
+
+  {
+    accessorKey: "total_area",
+    header: "Total Area",
+    cell: ({ row }) => (
+      <div className="text-muted-foreground">{row.original.total_area}</div>
+    ),
   },
   {
-    accessorKey: "phone",
-    header: "Phone Number",
+    accessorKey: "google_map_link",
+    header: "Google Map Link",
+    cell: ({ row }) => (
+      <div className="text-muted-foreground">
+        {row.original.google_map_link}
+      </div>
+    ),
   },
   {
-    accessorKey: "position",
-    header: "Position",
-  },
-  {
-    accessorKey: "employmentType",
-    header: "Employment Type",
-  },
-  {
-    accessorKey: "hireDate",
-    header: "Hire Date",
-    cell: ({ row }) => new Date(row.original.hireddate).toString(),
-  },
-  {
-    accessorKey: "workLocation",
-    header: "Work Location",
-  },
-  {
-    accessorKey: "salary",
-    header: "Salary",
-    cell: ({ row }) => {
-      return <span className="font-medium">{row.original.salary}</span>;
-    },
-  },
-  {
-    accessorKey: "workStatus",
-    header: "Work Status",
-    cell: ({ row }) => {
-      const status = row.original.workStatus;
-      return (
-        <span
-          className={cn(
-            "w-max px-3 py-1 rounded-sm text-xs font-bold uppercase flex items-center gap-2",
-            statusStyles[status].bg
-          )}
-        >
-          {statusStyles[status].icon}
-          {status}
-        </span>
-      );
-    },
+    accessorKey: "yandex_map_link",
+    header: "Yandex Map Link",
+    cell: ({ row }) => (
+      <div className="text-muted-foreground">
+        {row.original.yandex_map_link}
+      </div>
+    ),
   },
   {
     id: "actions",
     accessorKey: "Actions",
     cell: ({ row }) => {
-      const staff = row.original;
+      const branch = row.original;
       const [open, setOpen] = useState(false);
+      const router = useRouter();
 
       const handleDelete = async (id: number) => {
         const response = await fetch(
-          `https://carmanagement-1-rmyc.onrender.com/api/v1/staffs/${id}/`,
+          `https://carmanagement-1-rmyc.onrender.com/api/v1/branchs/${id}/`,
           {
             method: "DELETE",
           }
@@ -173,6 +116,7 @@ export const columns: ColumnDef<Staff>[] = [
         }
         console.log(`Client ${id} deleted successfully`);
         setOpen(false);
+        window.location.reload();
       };
 
       return (
@@ -187,7 +131,9 @@ export const columns: ColumnDef<Staff>[] = [
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => console.log("Update:", staff.id)}
+                onClick={() =>
+                  router.push("/branch/create-branch?id=" + branch.id)
+                }
                 className="flex items-center gap-2"
               >
                 <Pencil className="h-4 w-4" /> Update
@@ -206,9 +152,9 @@ export const columns: ColumnDef<Staff>[] = [
           <ResponsiveModal
             open={open}
             setOpen={setOpen}
-            title={`${staff.fullname} fillialini o'chirmoqchimisiz??`}
+            title={`${branch.name} fillialini o'chirmoqchimisiz??`}
             description="Shu branchni o‘chirishni tasdiqlaysizmi?"
-            onConfirm={() => handleDelete(staff.id)}
+            onConfirm={() => handleDelete(branch.id)}
           />
         </>
       );

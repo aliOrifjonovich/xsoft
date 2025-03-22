@@ -1,5 +1,5 @@
 "use client";
-
+import Cookies from "js-cookie";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -8,8 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
-import Cookies from "js-cookie";
-import { post } from "@/lib/request";
+import { toast } from "sonner";
 
 interface LoginFormInputs {
   phonenumber: string;
@@ -21,32 +20,42 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"form">) {
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
   const { register, handleSubmit } = useForm<LoginFormInputs>();
   const router = useRouter();
 
   // Function to handle login
   const onSubmit = async (data: LoginFormInputs) => {
-    // const faketoken = "asdbsk";
-    // Cookies.set("token", faketoken, { expires: 1, secure: true });
-    // router.push("/");
-    setLoading(true);
     try {
-      const { result, ok } = await post<{ access: string }>("token/", {
-        identifier: data.phonenumber,
-        password: data.password,
-      });
-      if (ok) {
-        Cookies.set("token", result.access, { expires: 1, secure: true });
-        router.push("/");
-      } else {
-        alert("Login failed. Please try again.");
+      const response = await fetch(
+        "https://carmanagement-1-rmyc.onrender.com/api/v1/token/",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            identifier: data.phonenumber,
+            password: data.password,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Login failed. Please check your credentials.");
       }
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("An error occurred. Please try again.");
-    } finally {
-      setLoading(false);
+
+      const result = await response.json();
+      Cookies.set("token", result.access, { secure: true });
+      router.push("/");
+
+      toast.success("Login muvaffaqiyatli amalga oshirildi", {
+        position: "top-right",
+        closeButton: true,
+        style: {
+          backgroundColor: "green",
+          color: "white",
+        },
+      });
+    } catch (error: any) {
+      toast.error(error.message || "Login failed. Please try again.");
     }
   };
 
@@ -94,16 +103,16 @@ export function LoginForm({
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
+              className="absolute right-3 top-2 text-gray-500 hover:text-gray-700 cursor-pointer"
             >
-              {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
         </div>
 
         {/* Submit Button */}
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? "Logging in..." : "Login"}
+        <Button type="submit" className="w-full">
+          Login
         </Button>
       </div>
     </form>

@@ -1,14 +1,14 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import CreateClient from "@/components/Client/CreateClients";
+import CreateBranch from "@/components/Branches/CreateBranch";
 import Header from "@/components/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { cookies } from "next/headers";
 
-async function getDataById(id: number) {
+async function getById(id: number) {
   const cookie = await cookies();
   const token = cookie.get("token");
   const response = await fetch(
-    `https://carmanagement-1-rmyc.onrender.com/api/v1/client/${id}/`,
+    `https://carmanagement-1-rmyc.onrender.com/api/v1/branchs/${id}/`,
     {
       method: "GET",
       headers: {
@@ -19,30 +19,27 @@ async function getDataById(id: number) {
   );
 
   if (!response.ok) {
-    console.error("Network response was not ok for create clients");
+    console.error("Network response was not ok for create branch");
   }
   const data = await response.json();
   return data;
 }
 
-export default async function Clients({
+export default async function Branches({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const id = Number(await searchParams.then((params) => params.id)) || 0;
-  const data = id ? await getDataById(id) : null;
+
+  const data = id ? await getById(id) : null;
 
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <CreateClient
-          updatedValues={data}
-          isUpdated={id ? true : false}
-          id={id}
-        />
+        <CreateBranch updatedValues={data} isUpdated={!!id} id={id} />
       </SidebarInset>
     </SidebarProvider>
   );

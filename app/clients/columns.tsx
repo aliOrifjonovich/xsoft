@@ -12,18 +12,21 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
-import { JSX } from "react";
+import { JSX, useState } from "react";
+import { ResponsiveModal } from "@/components/Modal";
+import Link from "next/link";
 
 export type ClientType = {
-  id: string;
-  name: string;
+  id: number;
+  fullname: string;
   email: string;
-  phone: string;
+  phonenumber: string;
   address: string;
-  nationalId: string;
+  age: number;
+  passportid: string;
   driverLicense: string;
-  licenseExpiry: string;
-  status: "Active" | "Blacklisted" | "Inactive";
+  licenseExpiry: Date;
+  status: "Active" | "Blacklisted" | "InActive";
 };
 
 // Status Styles Mapping
@@ -39,7 +42,7 @@ const statusStyles: Record<
     bg: "bg-red-500 text-white",
     icon: <Ban className="w-4 h-4" />,
   },
-  Inactive: {
+  InActive: {
     bg: "bg-gray-400 text-white",
     icon: <Ban className="w-4 h-4" />,
   },
@@ -69,9 +72,11 @@ export const columns: ColumnDef<ClientType>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "name",
+    accessorKey: "fullname",
     header: "Full Name",
-    cell: ({ row }) => <div className="font-medium">{row.original.name}</div>,
+    cell: ({ row }) => (
+      <div className="font-medium">{row.original.fullname}</div>
+    ),
   },
   {
     accessorKey: "email",
@@ -81,7 +86,7 @@ export const columns: ColumnDef<ClientType>[] = [
     ),
   },
   {
-    accessorKey: "phone",
+    accessorKey: "phonenumber",
     header: "Phone",
   },
 
@@ -90,8 +95,11 @@ export const columns: ColumnDef<ClientType>[] = [
     header: "Address",
   },
   {
-    accessorKey: "nationalId",
+    accessorKey: "passportid",
     header: "National ID",
+    cell: ({ row }) => (
+      <div className="text-black">{row.original.passportid}</div>
+    ),
   },
   {
     accessorKey: "driverLicense",
@@ -101,9 +109,7 @@ export const columns: ColumnDef<ClientType>[] = [
     accessorKey: "licenseExpiry",
     header: "License Expiry",
     cell: ({ row }) => (
-      <div className="text-muted-foreground">
-        {new Date(row.original.licenseExpiry).toLocaleDateString("en-GB")}
-      </div>
+      <div className="text-black">{row.original.licenseExpiry.toString()}</div>
     ),
   },
   {
@@ -115,10 +121,10 @@ export const columns: ColumnDef<ClientType>[] = [
         <span
           className={cn(
             "w-max px-3 py-1 rounded-sm text-xs font-bold uppercase flex items-center gap-2",
-            statusStyles[status].bg
+            statusStyles[status]?.bg
           )}
         >
-          {statusStyles[status].icon}
+          {statusStyles[status]?.icon}
           {status}
         </span>
       );
@@ -129,31 +135,60 @@ export const columns: ColumnDef<ClientType>[] = [
     accessorKey: "Actions",
     cell: ({ row }) => {
       const client = row.original;
+      const [open, setOpen] = useState(false);
+
+      const handleDelete = async (id: number) => {
+        const response = await fetch(
+          `https://carmanagement-1-rmyc.onrender.com/api/v1/client/${id}/`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to delete client.");
+        }
+        console.log(`Client ${id} deleted successfully`);
+        setOpen(false);
+        window.location.reload();
+      };
+
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => console.log("Update:", client.id)}
-              className="flex items-center gap-2"
-            >
-              <Pencil className="h-4 w-4" /> Update
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => console.log("Delete:", client.id)}
-              className="flex items-center gap-2 text-red-500"
-            >
-              <Trash2 className="h-4 w-4" /> Delete
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <Link href={`/clients/create-clients?id=${client.id}`}>
+                <DropdownMenuItem className="cursor-pointer">
+                  <Pencil className="h-4 w-4 mr-2" />
+                  Edit
+                </DropdownMenuItem>
+              </Link>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => {
+                  setOpen(true);
+                }}
+                className="flex items-center gap-2 text-red-500"
+              >
+                <Trash2 className="h-4 w-4" /> Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <ResponsiveModal
+            open={open}
+            setOpen={setOpen}
+            title={`${client.fullname} fillialini o'chirmoqchimisiz??`}
+            description="Shu branchni o‘chirishni tasdiqlaysizmi?"
+            onConfirm={() => handleDelete(client.id)}
+          />
+        </>
       );
     },
   },

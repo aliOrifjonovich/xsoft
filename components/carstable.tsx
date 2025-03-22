@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useMemo, useState } from "react";
 import {
   ChevronDown,
   ChevronRight,
@@ -44,6 +44,9 @@ import {
   PaginationPrevious,
 } from "./ui/pagination";
 import { useRouter } from "next/navigation";
+import { FeaturesIcon } from "@/Icons/FeaturesIcon";
+import { ResponsiveModal } from "./Modal";
+import { Fragment } from "react";
 
 interface CarsTableProps {
   data?: Vehicle[];
@@ -51,11 +54,13 @@ interface CarsTableProps {
 }
 
 export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
-  const [selectedRows, setSelectedRows] = React.useState<string[]>([]);
-  const [expandedRows, setExpandedRows] = React.useState<string[]>([]);
-  const [filterText, setFilterText] = React.useState("");
-  const [currentPage, setCurrentPage] = React.useState(1);
-  const [pageSize, setPageSize] = React.useState(10);
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  const [expandedRows, setExpandedRows] = useState<number[]>([]);
+  const [filterText, setFilterText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [open, setOpen] = useState(false);
+
   const router = useRouter();
 
   // Status badge colors
@@ -65,7 +70,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
     "Rezerv qilingan": "bg-amber-500 hover:bg-amber-600",
   };
 
-  const filteredData = React.useMemo(() => {
+  const filteredData = useMemo(() => {
     if (!filterText) return data;
 
     const searchText = filterText.toLowerCase();
@@ -73,12 +78,12 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
       (item) =>
         item.brand.toLowerCase().includes(searchText) ||
         item.model.toLowerCase().includes(searchText) ||
-        item.licensePlate.toLowerCase().includes(searchText) ||
-        item.rentalStatus.toLowerCase().includes(searchText)
+        item.license_plate.toLowerCase().includes(searchText) ||
+        item.rental_status.toLowerCase().includes(searchText)
     );
   }, [data, filterText]);
 
-  const paginatedData = React.useMemo(() => {
+  const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     return filteredData.slice(startIndex, endIndex);
@@ -86,7 +91,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
 
   const totalPages = Math.ceil(filteredData.length / pageSize);
 
-  const toggleRowSelection = (id: string) => {
+  const toggleRowSelection = (id: number) => {
     setSelectedRows((prev) =>
       prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
     );
@@ -100,7 +105,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
     }
   };
 
-  const toggleRowExpansion = (id: string) => {
+  const toggleRowExpansion = (id: number) => {
     setExpandedRows((prev) =>
       prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
     );
@@ -108,11 +113,27 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
 
   const handlePageSizeChange = (newSize: number) => {
     setPageSize(newSize);
-    setCurrentPage(1); // Reset to the first page when page size changes
+    setCurrentPage(1);
   };
 
   const getStatusBadgeClass = (status: string) => {
     return statusColors[status] || "bg-gray-500 hover:bg-gray-600";
+  };
+
+  const handleDelete = async (id: number) => {
+    const response = await fetch(
+      `https://carmanagement-1-rmyc.onrender.com/api/v1/cars/${id}/`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to delete client.");
+    }
+    console.log(`Client ${id} deleted successfully`);
+    setOpen(false);
+    window.location.reload();
   };
 
   const PaginationControls = () => (
@@ -200,7 +221,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
 
           <TableBody>
             {paginatedData.map((car) => (
-              <React.Fragment key={car.id}>
+              <Fragment key={car.id}>
                 <TableRow
                   className="border-t cursor-pointer"
                   onClick={() => toggleRowExpansion(car.id)}
@@ -232,11 +253,8 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                   </TableCell>
                   <TableCell>
                     <Image
-                      src={
-                        car.details.photos[0] ||
-                        "/placeholder.svg?height=80&width=120"
-                      }
-                      alt={`${car.brand} ${car.model}`}
+                      src={`https://carmanagement-1-rmyc.onrender.com${car.images?.[0]?.photo}`}
+                      alt={`${car.brand}`}
                       width={80}
                       height={60}
                       className="rounded-md object-cover"
@@ -250,17 +268,17 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                   </TableCell>
                   <TableCell className="capitalize">{car.category}</TableCell>
                   <TableCell className="capitalize">
-                    {car.licensePlate}
+                    {car.license_plate}
                   </TableCell>
-                  <TableCell>{car.seatingCapacity}</TableCell>
+                  <TableCell>{car.seating_capacity}</TableCell>
                   <TableCell className="capitalize">
                     {car.transmission}
                   </TableCell>
                   <TableCell className="capitalize">{car.branch}</TableCell>
-                  <TableCell>${car.details.rentalPricePerDay} / day</TableCell>
+                  <TableCell>{car.rental_price_per_day} / day</TableCell>
                   <TableCell>
-                    <Badge className={getStatusBadgeClass(car.rentalStatus)}>
-                      {car.rentalStatus}
+                    <Badge className={getStatusBadgeClass(car.rental_status)}>
+                      {car.rental_status}
                     </Badge>
                   </TableCell>
 
@@ -282,13 +300,23 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
-                          onClick={() => console.log("Delete:", car.id)}
+                          onClick={() => {
+                            setOpen(true);
+                            console.log("Delete:", car.id);
+                          }}
                           className="flex items-center gap-2 text-red-500"
                         >
                           <Trash2 className="h-4 w-4" /> Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
+                    <ResponsiveModal
+                      open={open}
+                      setOpen={setOpen}
+                      title={`${car.model} fillialini o'chirmoqchimisiz??`}
+                      description="Shu branchni o‘chirishni tasdiqlaysizmi?"
+                      onConfirm={() => handleDelete(Number(car.id))}
+                    />
                   </TableCell>
                 </TableRow>
 
@@ -353,7 +381,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                           License Plate
                                         </div>
                                         <div className="font-medium">
-                                          {car.licensePlate}
+                                          {car.license_plate}
                                         </div>
                                       </div>
                                       <div>
@@ -361,7 +389,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                           Year
                                         </div>
                                         <div className="font-medium">
-                                          {car.details.madeYear}
+                                          {car.year}
                                         </div>
                                       </div>
                                       <div>
@@ -369,7 +397,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                           Color
                                         </div>
                                         <div className="font-medium">
-                                          {car.details.color}
+                                          {car.color}
                                         </div>
                                       </div>
                                       <div>
@@ -378,10 +406,10 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                         </div>
                                         <Badge
                                           className={getStatusBadgeClass(
-                                            car.rentalStatus
+                                            car.rental_status
                                           )}
                                         >
-                                          {car.rentalStatus}
+                                          {car.rental_status}
                                         </Badge>
                                       </div>
                                     </div>
@@ -399,7 +427,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                           Fuel Type
                                         </div>
                                         <div className="font-medium">
-                                          {car.details.fuelType}
+                                          {car.fuel_Type}
                                         </div>
                                       </div>
                                       <div>
@@ -415,7 +443,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                           Engine Size
                                         </div>
                                         <div className="font-medium">
-                                          {car.details.engineSize}
+                                          {car.engine_size}
                                         </div>
                                       </div>
                                       <div>
@@ -423,7 +451,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                           Mileage
                                         </div>
                                         <div className="font-medium">
-                                          {car.details.mileage} km
+                                          {car.mileage} km
                                         </div>
                                       </div>
                                       <div>
@@ -431,7 +459,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                           Seating Capacity
                                         </div>
                                         <div className="font-medium">
-                                          {car.seatingCapacity} seats
+                                          {car.seating_capacity} seats
                                         </div>
                                       </div>
                                     </div>
@@ -452,21 +480,23 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                           Daily Rental Price
                                         </div>
                                         <div className="font-medium text-lg">
-                                          ${car.details.rentalPricePerDay} / day
+                                          ${car.rental_price_per_day} / day
                                         </div>
                                       </div>
                                       <div>
                                         <div className="text-sm text-muted-foreground">
                                           Deposit Required
                                         </div>
-                                        <div className="font-medium">$5000</div>
+                                        <div className="font-medium">
+                                          {car.deposit}
+                                        </div>
                                       </div>
                                       <div>
                                         <div className="text-sm text-muted-foreground">
                                           Minimum Age
                                         </div>
                                         <div className="font-medium">
-                                          25 years
+                                          {car.minimum_age} years
                                         </div>
                                       </div>
                                     </div>
@@ -482,13 +512,13 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                       <div className="flex items-center gap-2">
                                         <User className="h-4 w-4 text-muted-foreground" />
                                         <div className="font-medium">
-                                          {car.details.owner.name}
+                                          {car.owner_name}
                                         </div>
                                       </div>
                                       <div className="flex items-center gap-2">
                                         <Phone className="h-4 w-4 text-muted-foreground" />
                                         <div className="font-medium">
-                                          {car.details.owner.phone}
+                                          {car.owner_phone}
                                         </div>
                                       </div>
                                     </div>
@@ -501,7 +531,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                       Description
                                     </h3>
                                     <p className="text-sm text-gray-700 leading-normal break-words whitespace-normal max-w-full">
-                                      {car.details.description}
+                                      {car.description}
                                     </p>
                                   </CardContent>
                                 </Card>
@@ -512,19 +542,14 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                           {/* Photos Tab */}
                           <TabsContent value="photos">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                              {car.details.photos.map((photo, index) => (
+                              {car.images.map((photo, index) => (
                                 <div
                                   key={index}
                                   className="rounded-lg overflow-hidden"
                                 >
                                   <Image
-                                    src={
-                                      photo ||
-                                      "/placeholder.svg?height=300&width=500"
-                                    }
-                                    alt={`${car.brand} ${car.model} photo ${
-                                      index + 1
-                                    }`}
+                                    src={`https://carmanagement-1-rmyc.onrender.com${photo.photo}`}
+                                    alt={`${car.brand}`}
                                     width={500}
                                     height={300}
                                     className="w-full h-auto object-cover"
@@ -542,24 +567,20 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                   Car Features
                                 </h3>
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                  {car.details.features.map(
-                                    (feature, index) => (
+                                  {car.features.map((feature, index) => {
+                                    const FeatureIcon = FeaturesIcon(
+                                      feature.icon
+                                    );
+                                    return (
                                       <div
                                         key={index}
                                         className="flex items-center gap-4"
                                       >
-                                        {typeof feature.icon === "string" && (
-                                          <div
-                                            className="w-6 h-6"
-                                            dangerouslySetInnerHTML={{
-                                              __html: feature.icon,
-                                            }}
-                                          />
-                                        )}
+                                        {FeatureIcon && <FeatureIcon />}
                                         <span>{feature.name}</span>
                                       </div>
-                                    )
-                                  )}
+                                    );
+                                  })}
                                 </div>
                               </CardContent>
                             </Card>
@@ -569,7 +590,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                     </TableCell>
                   </TableRow>
                 )}
-              </React.Fragment>
+              </Fragment>
             ))}
           </TableBody>
         </Table>

@@ -12,6 +12,8 @@ import {
 } from "../ui/breadcrumb";
 import { columns, Staff } from "@/app/staffs/columns";
 import { Card } from "../ui/card";
+// import { useUser } from "@/providers/UserProvider";
+// import { useRouter } from "next/navigation";
 
 interface UserProps {
   data?: Staff[];

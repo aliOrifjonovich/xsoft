@@ -23,5 +23,11 @@ export const config = {
     "/reservations/:path*",
     "/users/:path*",
     "/schedule/:path*",
+    "/cars/create-car/:path*",
+    "/clients/create-client/:path*",
+    "/reservations/create-reservation/:path*",
+    "/users/create-user/:path*",
+    "/schedule/create-schedule/:path*",
+    "/branch/create-branch/:path*",
   ],
 };

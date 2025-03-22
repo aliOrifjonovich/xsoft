@@ -5,15 +5,11 @@ import ReactSelect from "react-select";
 import makeAnimated from "react-select/animated";
 
 interface Option {
-  options: {
-    value: string;
-    label: string;
-    color?: string;
-    icon?: React.ReactNode;
-  }[];
-  value: string[];
-  onChange: (values: string[]) => void;
+  options: { value: string; label: string }[];
+  value: number[]; // ID lar raqam bo‘lishi kerak
+  onChange: (values: number[]) => void; // Faqat ID larni qaytaramiz
 }
+
 const animatedComponents = makeAnimated();
 
 const MultiSelect: FC<Option> = ({ options, value, onChange }) => {
@@ -22,10 +18,15 @@ const MultiSelect: FC<Option> = ({ options, value, onChange }) => {
       isMulti
       options={options}
       components={animatedComponents}
-      onChange={(selectedOptions) =>
-        onChange(selectedOptions.map((opt) => opt.value))
-      }
-      value={options.filter((option) => value?.includes(option.value))}
+      getOptionLabel={(e) => e.label}
+      onChange={(selectedOptions) => {
+        const selectedIds = selectedOptions.map((opt) => Number(opt.value));
+        onChange(selectedIds);
+      }}
+      value={options.filter(
+        (option) =>
+          Array.isArray(value) && value?.includes(Number(option.value))
+      )}
       instanceId="multi-select"
     />
   );

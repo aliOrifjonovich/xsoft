@@ -78,7 +78,7 @@ const Client: FC<ClientProps> = ({ data }) => {
       <DataTable
         columns={columns}
         data={data || []}
-        searchcolumns="name"
+        searchcolumns="fullname"
         url="/clients/create-clients"
         buttonTitle="Mijoz Qo'shish"
       />

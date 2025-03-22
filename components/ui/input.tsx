@@ -1,8 +1,12 @@
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+interface IInput extends React.ComponentProps<"input"> {
+  onChange?: React.ChangeEventHandler<HTMLInputElement> | undefined;
+}
+
+function Input({ className, type, onChange, ...props }: IInput) {
   return (
     <input
       type={type}
@@ -14,8 +18,9 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
         className
       )}
       {...props}
+      onChange={onChange}
     />
-  )
+  );
 }
 
-export { Input }
+export { Input };

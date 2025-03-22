@@ -35,7 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -58,7 +58,6 @@ export function DataTable<TData, TValue>({
   url,
   buttonTitle,
 }: DataTableProps<TData, TValue>) {
-  const router = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -156,17 +155,13 @@ export function DataTable<TData, TValue>({
               </Popover>
             )}
             <DataTableViewOptions table={table} />
-            <Button
-              className="flex gap-2 cursor-pointer"
-              onClick={() => {
-                if (url) {
-                  router.push(url);
-                }
-              }}
-            >
-              <Plus />
-              {buttonTitle}
-            </Button>
+
+            <Link href={url ?? "#"}>
+              <Button className="flex gap-2 cursor-pointer">
+                <Plus />
+                {buttonTitle}
+              </Button>
+            </Link>
           </div>
         </div>
         <Table>

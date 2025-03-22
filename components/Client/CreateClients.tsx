@@ -1,8 +1,15 @@
 "use client";
 import { FormInput } from "@/interfaces";
-import React from "react";
+import React, { FC } from "react";
 import { z } from "zod";
 import CreateForm from "../CreateForm";
+import { ClientType } from "@/app/clients/columns";
+
+interface CreateClientProps {
+  updatedValues: ClientType;
+  isUpdated: boolean;
+  id: number;
+}
 
 const formSchema = z.object({
   fullname: z.string().min(1),
@@ -11,14 +18,14 @@ const formSchema = z.object({
   address: z.string().min(1),
   passportid: z.string().min(1),
   driverLicense: z.string().min(1),
-  licenseExpiry: z.string().min(1),
+  licenseExpiry: z.date().min(new Date("1900-01-01"), "Yilni kiriting"),
   age: z.preprocess((val) => Number(val), z.number().min(1)),
-  status: z.enum(["active", "inactive", "blacklisted"]),
+  status: z.enum(["Active", "InActive", "Blacklisted"]),
 });
 
 const inputs: FormInput<typeof formSchema>[] = [
   {
-    title: "Avtomobil ma'lumotlari",
+    title: "Mijoz Ma'lumotlari",
     fields: [
       {
         type: "single_line",
@@ -64,10 +71,9 @@ const inputs: FormInput<typeof formSchema>[] = [
         name: "driverLicense",
       },
       {
-        type: "single_line",
-        inputType: "text",
+        type: "datePicker",
+        inputType: "date",
         label: "License expiry",
-        placeholder: "20/12/2030",
         name: "licenseExpiry",
       },
       {
@@ -84,21 +90,31 @@ const inputs: FormInput<typeof formSchema>[] = [
         placeholder: "Active",
         name: "status",
         options: [
-          { label: "Active", value: "active" },
-          { label: "Inactive", value: "inactive" },
-          { label: "Blacklisted", value: "blacklisted" },
+          { label: "Active", value: "Active" },
+          { label: "Inactive", value: "InActive" },
+          { label: "Blacklisted", value: "Blacklisted" },
         ],
       },
     ],
   },
 ];
 
-const CreateClient = () => {
+const CreateClient: FC<CreateClientProps> = ({
+  updatedValues,
+  isUpdated,
+  id,
+}) => {
   return (
     <CreateForm<typeof formSchema>
       inputs={inputs}
       formSchema={formSchema}
       pageTitle="Yangi mijozlarni qo'shish"
+      url="client/"
+      pageUrl="/clients"
+      toastMessage="Mijoz"
+      updatedValues={updatedValues}
+      isUpdated={isUpdated}
+      id={id}
     />
   );
 };

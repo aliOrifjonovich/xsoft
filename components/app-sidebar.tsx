@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import {
-  CalendarSync,
   Car,
   Command,
   Contact,
@@ -32,7 +31,7 @@ const data = {
   user: {
     name: "shadcn",
     email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    avatar: "",
   },
 
   navMain: [
@@ -65,12 +64,12 @@ const data = {
       icon: ShoppingCart,
       isActive: true,
     },
-    {
-      title: "Schedule",
-      url: "/schedule",
-      icon: CalendarSync,
-      isActive: true,
-    },
+    // {
+    //   title: "Schedule",
+    //   url: "/schedule",
+    //   icon: CalendarSync,
+    //   isActive: true,
+    // },
     {
       title: "Staffs",
       url: "/staffs",

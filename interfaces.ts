@@ -11,7 +11,7 @@ export interface InputInterface<T extends ZodType> {
     value: string;
     label: string;
     color?: string;
-    icon?: React.ReactNode;
+    icon?: string;
   }[];
 }
 
