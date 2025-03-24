@@ -45,7 +45,7 @@ import {
 } from "./ui/pagination";
 import { useRouter } from "next/navigation";
 import { FeaturesIcon } from "@/Icons/FeaturesIcon";
-import { ResponsiveModal } from "./Modal";
+import { ResponsiveModal } from "./ResponsiveModal";
 import { Fragment } from "react";
 
 interface CarsTableProps {
@@ -67,7 +67,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
   const statusColors: Record<string, string> = {
     "Bo'sh": "bg-green-500 hover:bg-green-600",
     Ijarada: "bg-red-500 hover:bg-red-600",
-    "Rezerv qilingan": "bg-amber-500 hover:bg-amber-600",
+    "Reserv qilingan": "bg-amber-500 hover:bg-amber-600",
   };
 
   const filteredData = useMemo(() => {
@@ -90,6 +90,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
   }, [filteredData, currentPage, pageSize]);
 
   const totalPages = Math.ceil(filteredData.length / pageSize);
+  console.log("filteredData", paginatedData);
 
   const toggleRowSelection = (id: number) => {
     setSelectedRows((prev) =>
@@ -220,17 +221,17 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
           </TableHeader>
 
           <TableBody>
-            {paginatedData.map((car) => (
-              <Fragment key={car.id}>
+            {paginatedData?.map((car) => (
+              <Fragment key={car?.id}>
                 <TableRow
                   className="border-t cursor-pointer"
-                  onClick={() => toggleRowExpansion(car.id)}
+                  onClick={() => toggleRowExpansion(car?.id)}
                 >
                   <TableCell className="p-4">
                     <Checkbox
-                      checked={selectedRows.includes(car.id)}
-                      onCheckedChange={() => toggleRowSelection(car.id)}
-                      aria-label={`Select car ${car.id}`}
+                      checked={selectedRows.includes(car?.id)}
+                      onCheckedChange={() => toggleRowSelection(car?.id)}
+                      aria-label={`Select car ${car?.id}`}
                     />
                   </TableCell>
                   <TableCell className="p-4">
@@ -238,13 +239,13 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                       variant="ghost"
                       size="icon"
                       aria-label={
-                        expandedRows.includes(car.id)
+                        expandedRows.includes(car?.id)
                           ? "Collapse details"
                           : "Expand details"
                       }
                       className="cursor-pointer"
                     >
-                      {expandedRows.includes(car.id) ? (
+                      {expandedRows.includes(car?.id) ? (
                         <ChevronDown className="h-4 w-4" />
                       ) : (
                         <ChevronRight className="h-4 w-4" />
@@ -253,7 +254,9 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                   </TableCell>
                   <TableCell>
                     <Image
-                      src={`https://carmanagement-1-rmyc.onrender.com${car.images?.[0]?.photo}`}
+                      src={`https://carmanagement-1-rmyc.onrender.com${
+                        car.images?.[0]?.photo || ""
+                      }`}
                       alt={`${car.brand}`}
                       width={80}
                       height={60}
@@ -274,7 +277,9 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                   <TableCell className="capitalize">
                     {car.transmission}
                   </TableCell>
-                  <TableCell className="capitalize">{car.branch}</TableCell>
+                  <TableCell className="capitalize">
+                    {car.branch.name}
+                  </TableCell>
                   <TableCell>{car.rental_price_per_day} / day</TableCell>
                   <TableCell>
                     <Badge className={getStatusBadgeClass(car.rental_status)}>
@@ -293,7 +298,9 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem
-                          onClick={() => console.log("Update:", car.id)}
+                          onClick={() =>
+                            router.push("/cars/create-car?id=" + car?.id)
+                          }
                           className="flex items-center gap-2"
                         >
                           <Pencil className="h-4 w-4" /> Update
@@ -302,7 +309,6 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                         <DropdownMenuItem
                           onClick={() => {
                             setOpen(true);
-                            console.log("Delete:", car.id);
                           }}
                           className="flex items-center gap-2 text-red-500"
                         >
@@ -315,12 +321,12 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                       setOpen={setOpen}
                       title={`${car.model} fillialini o'chirmoqchimisiz??`}
                       description="Shu branchni o‘chirishni tasdiqlaysizmi?"
-                      onConfirm={() => handleDelete(Number(car.id))}
+                      onConfirm={() => handleDelete(Number(car?.id))}
                     />
                   </TableCell>
                 </TableRow>
 
-                {expandedRows.includes(car.id) && (
+                {expandedRows.includes(car?.id) && (
                   <TableRow className="w-full bg-muted hover:bg-trnasparent">
                     <TableCell colSpan={12} className="p-0">
                       <div className="p-6">
@@ -364,7 +370,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                         <div className="text-sm text-muted-foreground">
                                           Brand
                                         </div>
-                                        <div className="font-medium">
+                                        <div className="font-medium capitalize">
                                           {car.brand}
                                         </div>
                                       </div>
@@ -372,7 +378,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                         <div className="text-sm text-muted-foreground">
                                           Model
                                         </div>
-                                        <div className="font-medium">
+                                        <div className="font-medium capitalize">
                                           {car.model}
                                         </div>
                                       </div>
@@ -380,7 +386,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                         <div className="text-sm text-muted-foreground">
                                           License Plate
                                         </div>
-                                        <div className="font-medium">
+                                        <div className="font-medium capitalize">
                                           {car.license_plate}
                                         </div>
                                       </div>
@@ -393,11 +399,19 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                         </div>
                                       </div>
                                       <div>
-                                        <div className="text-sm text-muted-foreground">
+                                        <div className="text-sm text-muted-foreground ">
                                           Color
                                         </div>
-                                        <div className="font-medium">
+                                        <div className="font-medium capitalize">
                                           {car.color}
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <div className="text-sm text-muted-foreground">
+                                          Mashinaning Fillial
+                                        </div>
+                                        <div className="font-medium capitalize">
+                                          {car.branch.name}
                                         </div>
                                       </div>
                                       <div>
@@ -426,15 +440,15 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                         <div className="text-sm text-muted-foreground">
                                           Fuel Type
                                         </div>
-                                        <div className="font-medium">
-                                          {car.fuel_Type}
+                                        <div className="font-medium capitalize">
+                                          {car.fuel_type}
                                         </div>
                                       </div>
                                       <div>
                                         <div className="text-sm text-muted-foreground">
                                           Transmission
                                         </div>
-                                        <div className="font-medium">
+                                        <div className="font-medium capitalize">
                                           {car.transmission}
                                         </div>
                                       </div>
@@ -480,7 +494,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                           Daily Rental Price
                                         </div>
                                         <div className="font-medium text-lg">
-                                          ${car.rental_price_per_day} / day
+                                          {car.rental_price_per_day} / day
                                         </div>
                                       </div>
                                       <div>
@@ -542,14 +556,14 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                           {/* Photos Tab */}
                           <TabsContent value="photos">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                              {car.images.map((photo, index) => (
+                              {car.images?.map((photo, index) => (
                                 <div
                                   key={index}
                                   className="rounded-lg overflow-hidden"
                                 >
                                   <Image
                                     src={`https://carmanagement-1-rmyc.onrender.com${photo.photo}`}
-                                    alt={`${car.brand}`}
+                                    alt={`${car?.brand}`}
                                     width={500}
                                     height={300}
                                     className="w-full h-auto object-cover"
@@ -567,10 +581,11 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                   Car Features
                                 </h3>
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                  {car.features.map((feature, index) => {
+                                  {car.features?.map((feature, index) => {
                                     const FeatureIcon = FeaturesIcon(
                                       feature.icon
                                     );
+
                                     return (
                                       <div
                                         key={index}

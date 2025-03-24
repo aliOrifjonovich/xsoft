@@ -34,6 +34,9 @@ export default async function Branches({
 
   const data = id ? await getById(id) : null;
 
+  console.log("data for branchs", data);
+  console.log("id", id);
+
   return (
     <SidebarProvider>
       <AppSidebar />

@@ -52,15 +52,24 @@ export default async function CreateStaffs({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const id = Number(await searchParams.then((params) => params.id)) || 0;
-  const data = id ? await getById(Number(id)) : null;
+
+  const data = id ? await getById(id) : null;
   const branchs = await getBranchs();
+
+  console.log("data for staffs", data);
+  console.log("id", id);
 
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <CreateStaff branchs={branchs} />
+        <CreateStaff
+          branchs={branchs}
+          updatedValues={data}
+          isUpdated={id ? true : false}
+          id={id}
+        />
       </SidebarInset>
     </SidebarProvider>
   );

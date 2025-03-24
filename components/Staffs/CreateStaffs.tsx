@@ -7,15 +7,18 @@ import { IBranches } from "@/app/cars/create-car/page";
 
 interface ICreateStaffs {
   branchs: IBranches[];
+  updatedValues?: z.infer<typeof formSchema>;
+  isUpdated?: boolean;
+  id?: number;
 }
 const formSchema = z.object({
   fullname: z.string().min(1),
-  phone: z.string().min(1),
-  postion: z.string().min(1),
+  phone_number: z.string().min(1),
+  position: z.string().min(1),
   gender: z.enum(["Male", "Female"]),
   dob: z.date().min(new Date("1900-01-01"), "Yilni kiriting"),
-  workingtype: z.enum(["Full_time", "Part_time", "Contract"]),
-  hireddate: z.date().min(new Date("1900-01-01"), "Yilni kiriting"),
+  employmentType: z.enum(["Full_time", "Part_time", "Contract"]),
+  hireDate: z.date().min(new Date("1900-01-01"), "Yilni kiriting"),
   branch: z.preprocess((val) => Number(val), z.number().min(1)),
   salary: z.preprocess((val) => Number(val), z.number().min(1)),
   workStatus: z.enum(["Active", "Vacation", "Fired"]),
@@ -28,7 +31,12 @@ const formSchema = z.object({
     .optional(),
 });
 
-const CreateStaff: FC<ICreateStaffs> = ({ branchs }) => {
+const CreateStaff: FC<ICreateStaffs> = ({
+  branchs,
+  updatedValues,
+  isUpdated,
+  id,
+}) => {
   const inputs: FormInput<typeof formSchema>[] = [
     {
       title: "Xodimlarni ma'lumotlari",
@@ -56,7 +64,7 @@ const CreateStaff: FC<ICreateStaffs> = ({ branchs }) => {
           inputType: "text",
           label: "Telefon raqami",
           placeholder: "+998930690225",
-          name: "phone",
+          name: "phone_number",
         },
         {
           type: "datePicker",
@@ -69,13 +77,13 @@ const CreateStaff: FC<ICreateStaffs> = ({ branchs }) => {
           inputType: "text",
           label: "Mansabi",
           placeholder: "Menejer",
-          name: "postion",
+          name: "position",
         },
         {
           type: "datePicker",
           inputType: "date",
           label: "Ishga olingan sanasi",
-          name: "hireddate",
+          name: "hireDate",
         },
         {
           type: "select",
@@ -98,7 +106,7 @@ const CreateStaff: FC<ICreateStaffs> = ({ branchs }) => {
         {
           type: "select",
           label: "Ish turi",
-          name: "workingtype",
+          name: "employmentType",
           placeholder: "Ish turi",
           options: [
             { label: "To'liq staf", value: "Full_time" },
@@ -127,6 +135,8 @@ const CreateStaff: FC<ICreateStaffs> = ({ branchs }) => {
     // },
   ];
 
+  console.log("updatedValues", updatedValues);
+
   return (
     <CreateForm<typeof formSchema>
       inputs={inputs}
@@ -135,6 +145,9 @@ const CreateStaff: FC<ICreateStaffs> = ({ branchs }) => {
       url="employee/"
       pageUrl="/staffs"
       toastMessage="Xodim"
+      updatedValues={updatedValues}
+      isUpdated={isUpdated}
+      id={id}
     />
   );
 };

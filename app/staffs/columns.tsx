@@ -18,10 +18,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
+// import Image from "next/image";
 import { JSX, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ResponsiveModal } from "@/components/Modal";
+import { ResponsiveModal } from "@/components/ResponsiveModal";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 export type Staff = {
   id: number;
@@ -29,11 +31,14 @@ export type Staff = {
   fullname: string;
   dob: Date;
   gender: "Male" | "Female";
-  phone: string;
+  phone_number: string;
   position: string;
-  workingtype: "Full_time" | "Part_time" | "Contract";
-  hireddate: Date;
-  branch: string;
+  employmentType: "Full_time" | "Part_time" | "Contract";
+  hireDate: Date;
+  branch: {
+    id: number;
+    name: string;
+  };
   salary: number;
   workStatus: "Active" | "Vacation" | "Fired";
 };
@@ -108,8 +113,11 @@ export const columns: ColumnDef<Staff>[] = [
     header: "Gender",
   },
   {
-    accessorKey: "phone",
+    accessorKey: "phone_number",
     header: "Phone Number",
+    cell: ({ row }) => (
+      <div className="text-black">{row.original.phone_number}</div>
+    ),
   },
   {
     accessorKey: "position",
@@ -117,16 +125,17 @@ export const columns: ColumnDef<Staff>[] = [
   },
   {
     accessorKey: "employmentType",
-    header: "Employment Type",
+    header: "Ish shakli",
   },
   {
     accessorKey: "hireDate",
     header: "Hire Date",
-    cell: ({ row }) => new Date(row.original.hireddate).toString(),
+    cell: ({ row }) => row.original.hireDate.toString(),
   },
   {
     accessorKey: "workLocation",
     header: "Work Location",
+    cell: ({ row }) => row.original.branch.name,
   },
   {
     accessorKey: "salary",
@@ -159,20 +168,31 @@ export const columns: ColumnDef<Staff>[] = [
     cell: ({ row }) => {
       const staff = row.original;
       const [open, setOpen] = useState(false);
+      const [loading, setLoading] = useState(false);
 
       const handleDelete = async (id: number) => {
+        setLoading(true);
+        // const token = Cookies.get("token");
+
         const response = await fetch(
-          `https://carmanagement-1-rmyc.onrender.com/api/v1/staffs/${id}/`,
+          `https://carmanagement-1-rmyc.onrender.com/api/v1/employee/${id}/`,
           {
             method: "DELETE",
+            // headers: {
+            //   Authorization: `Bearer ${token}`,
+            // },
           }
         );
 
-        if (!response.ok) {
-          throw new Error("Failed to delete client.");
+        if (response.ok) {
+          // mutate();
+          console.log("hello");
+        } else {
+          console.error("Failed to delete category");
         }
-        console.log(`Client ${id} deleted successfully`);
+        setLoading(false);
         setOpen(false);
+        // window.location.reload();
       };
 
       return (
@@ -186,18 +206,17 @@ export const columns: ColumnDef<Staff>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => console.log("Update:", staff.id)}
-                className="flex items-center gap-2"
-              >
-                <Pencil className="h-4 w-4" /> Update
-              </DropdownMenuItem>
+              <Link href={`/staffs/create-staffs?id=${staff.id}`}>
+                <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
+                  <Pencil className="h-4 w-4" /> Update
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => {
                   setOpen(true);
                 }}
-                className="flex items-center gap-2 text-red-500"
+                className="flex items-center gap-2 text-red-500 cursor-pointer"
               >
                 <Trash2 className="h-4 w-4" /> Delete
               </DropdownMenuItem>
@@ -206,6 +225,7 @@ export const columns: ColumnDef<Staff>[] = [
           <ResponsiveModal
             open={open}
             setOpen={setOpen}
+            loading={loading}
             title={`${staff.fullname} fillialini o'chirmoqchimisiz??`}
             description="Shu branchni o‘chirishni tasdiqlaysizmi?"
             onConfirm={() => handleDelete(staff.id)}

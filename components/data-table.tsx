@@ -58,6 +58,8 @@ export function DataTable<TData, TValue>({
   url,
   buttonTitle,
 }: DataTableProps<TData, TValue>) {
+
+  
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []

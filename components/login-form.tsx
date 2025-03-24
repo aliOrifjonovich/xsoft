@@ -54,8 +54,8 @@ export function LoginForm({
           color: "white",
         },
       });
-    } catch (error: any) {
-      toast.error(error.message || "Login failed. Please try again.");
+    } catch (error) {
+      toast.error("Login failed. Please try again.");
     }
   };
 

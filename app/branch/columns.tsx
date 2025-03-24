@@ -1,6 +1,6 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Loader2, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,8 +12,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
-import { ResponsiveModal } from "@/components/Modal";
+import { ResponsiveModal } from "@/components/ResponsiveModal";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export type BranchesType = {
   id: number;
@@ -101,22 +102,31 @@ export const columns: ColumnDef<BranchesType>[] = [
     cell: ({ row }) => {
       const branch = row.original;
       const [open, setOpen] = useState(false);
-      const router = useRouter();
+      const [loading, setLoading] = useState(false);
 
       const handleDelete = async (id: number) => {
+        setLoading(true);
+        // const token = Cookies.get("token");
+
         const response = await fetch(
           `https://carmanagement-1-rmyc.onrender.com/api/v1/branchs/${id}/`,
           {
             method: "DELETE",
+            // headers: {
+            //   Authorization: `Bearer ${token}`,
+            // },
           }
         );
 
-        if (!response.ok) {
-          throw new Error("Failed to delete client.");
+        if (response.ok) {
+          // mutate();
+          console.log("hello");
+        } else {
+          console.error("Failed to delete category");
         }
-        console.log(`Client ${id} deleted successfully`);
+        setLoading(false);
         setOpen(false);
-        window.location.reload();
+        // window.location.reload();
       };
 
       return (
@@ -130,14 +140,12 @@ export const columns: ColumnDef<BranchesType>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() =>
-                  router.push("/branch/create-branch?id=" + branch.id)
-                }
-                className="flex items-center gap-2"
-              >
-                <Pencil className="h-4 w-4" /> Update
-              </DropdownMenuItem>
+              <Link href={`/branch/create-branch?id=${branch.id}`}>
+                <DropdownMenuItem className="flex items-center gap-2">
+                  <Pencil className="h-4 w-4" /> Update
+                </DropdownMenuItem>
+              </Link>
+
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onClick={() => {
@@ -145,13 +153,21 @@ export const columns: ColumnDef<BranchesType>[] = [
                 }}
                 className="flex items-center gap-2 text-red-500"
               >
-                <Trash2 className="h-4 w-4" /> Delete
+                {loading ? (
+                  <Loader2 className="animate-spin h-4 w-4" />
+                ) : (
+                  <span>
+                    <Trash2 className="h-4 w-4" />
+                    Delete
+                  </span>
+                )}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <ResponsiveModal
             open={open}
             setOpen={setOpen}
+            loading={loading}
             title={`${branch.name} fillialini o'chirmoqchimisiz??`}
             description="Shu branchni o‘chirishni tasdiqlaysizmi?"
             onConfirm={() => handleDelete(branch.id)}

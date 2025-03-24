@@ -36,12 +36,14 @@ async function getData() {
 export default async function Page() {
   const staffdata = await getData();
 
+  console.log("staffdata", staffdata);
+
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <Staffs data={staffdata?.results} />
+        <Staffs data={staffdata} />
       </SidebarInset>
     </SidebarProvider>
   );

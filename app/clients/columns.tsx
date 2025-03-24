@@ -13,14 +13,14 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { JSX, useState } from "react";
-import { ResponsiveModal } from "@/components/Modal";
+import { ResponsiveModal } from "@/components/ResponsiveModal";
 import Link from "next/link";
 
 export type ClientType = {
   id: number;
   fullname: string;
   email: string;
-  phonenumber: string;
+  phone_number: string;
   address: string;
   age: number;
   passportid: string;
@@ -86,8 +86,11 @@ export const columns: ColumnDef<ClientType>[] = [
     ),
   },
   {
-    accessorKey: "phonenumber",
+    accessorKey: "phone_number",
     header: "Phone",
+    cell: ({ row }) => (
+      <div className="text-black">{row.original.phone_number}</div>
+    ),
   },
 
   {
@@ -136,21 +139,31 @@ export const columns: ColumnDef<ClientType>[] = [
     cell: ({ row }) => {
       const client = row.original;
       const [open, setOpen] = useState(false);
+      const [loading, setLoading] = useState(false);
 
       const handleDelete = async (id: number) => {
+        setLoading(true);
+        // const token = Cookies.get("token");
+
         const response = await fetch(
           `https://carmanagement-1-rmyc.onrender.com/api/v1/client/${id}/`,
           {
             method: "DELETE",
+            // headers: {
+            //   Authorization: `Bearer ${token}`,
+            // },
           }
         );
 
-        if (!response.ok) {
-          throw new Error("Failed to delete client.");
+        if (response.ok) {
+          // mutate();
+          console.log("hello");
+        } else {
+          console.error("Failed to delete category");
         }
-        console.log(`Client ${id} deleted successfully`);
+        setLoading(false);
         setOpen(false);
-        window.location.reload();
+        // window.location.reload();
       };
 
       return (
@@ -184,6 +197,7 @@ export const columns: ColumnDef<ClientType>[] = [
           <ResponsiveModal
             open={open}
             setOpen={setOpen}
+            loading={loading}
             title={`${client.fullname} fillialini o'chirmoqchimisiz??`}
             description="Shu branchni o‘chirishni tasdiqlaysizmi?"
             onConfirm={() => handleDelete(client.id)}

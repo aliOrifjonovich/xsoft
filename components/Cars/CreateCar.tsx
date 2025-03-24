@@ -4,6 +4,8 @@ import React, { FC } from "react";
 import { z } from "zod";
 import CreateForm from "../CreateForm";
 import { IBranches, IFeatures } from "@/app/cars/create-car/page";
+import { Vehicle } from "@/app/cars/page";
+import { ICategory } from "@/interfaces/Categories";
 
 const formSchema = z.object({
   brand: z.string().min(1),
@@ -15,12 +17,13 @@ const formSchema = z.object({
   rental_price_per_day: z.preprocess((val) => Number(val), z.number().min(1)),
   owner_name: z.string().min(1),
   owner_phone: z.string().min(1),
-  color: z.enum(["red", "blue", "black", "white", "silver", "gray"]),
-  fuel_type: z.enum(["diesel", "petrol", "electric", "hybrid"]),
+  color: z.string().min(1),
+  fuel_type: z.string().min(1),
   year: z.preprocess((val) => Number(val), z.number().min(1)),
   deposit: z.preprocess((val) => Number(val), z.number().min(1)),
   minimum_age: z.preprocess((val) => Number(val), z.number().min(1)),
   branch: z.preprocess((val) => Number(val), z.number().min(1)),
+  category: z.preprocess((val) => Number(val), z.number().min(1)),
   features: z.array(z.number().min(1)),
   engine_size: z.enum([
     "0.6L",
@@ -35,7 +38,7 @@ const formSchema = z.object({
     "6.0L",
     "7.0L+",
   ]),
-  rental_status: z.enum(["bosh", "ijarada", "reserv qilingan"]),
+  rental_status: z.enum(["bosh", "ijarada", "reserved"]),
   description: z.string().min(10),
   images: z
     .any()
@@ -45,9 +48,20 @@ const formSchema = z.object({
 interface IcreateCar {
   features: IFeatures[];
   branchs: IBranches[];
+  updatedValues: z.infer<typeof formSchema>;
+  categories: ICategory[];
+  isUpdated: boolean;
+  id: number;
 }
 
-const CreateCar: FC<IcreateCar> = ({ features, branchs }) => {
+const CreateCar: FC<IcreateCar> = ({
+  features,
+  branchs,
+  categories,
+  updatedValues,
+  isUpdated,
+  id,
+}) => {
   const inputs: FormInput<typeof formSchema>[] = [
     {
       title: "Avtomobil ma'lumotlari",
@@ -167,11 +181,33 @@ const CreateCar: FC<IcreateCar> = ({ features, branchs }) => {
           name: "branch",
           placeholder: "Yunusobod",
           options:
-            branchs?.map((branch: IBranches) => ({
-              id: branch.id,
-              label: branch.name,
-              value: branch.id.toString(),
-            })) || [],
+            branchs?.map(
+              (branch: IBranches) => (
+                console.log(branch.name, "branch"),
+                {
+                  id: branch.id,
+                  label: branch.name,
+                  value: branch.id.toString(),
+                }
+              )
+            ) || [],
+        },
+        {
+          type: "select",
+          label: "Avtomobil Kategoriyasi",
+          name: "category",
+          placeholder: "Sedan",
+          options:
+          categories?.map(
+              (category: ICategory) => (
+                console.log(category.name, "branch"),
+                {
+                  id: category.id,
+                  label: category.name,
+                  value: category.id.toString(),
+                }
+              )
+            ) || [],
         },
       ],
     },
@@ -194,7 +230,7 @@ const CreateCar: FC<IcreateCar> = ({ features, branchs }) => {
       options: [
         { label: "✅ Bo'sh", value: "bosh" },
         { label: "🚗 Ijarada", value: "ijarada" },
-        { label: "📅 Reserv qilingan", value: "reserv qilingan" },
+        { label: "📅 Reserv qilingan", value: "reserved" },
       ],
     },
     {
@@ -251,6 +287,10 @@ const CreateCar: FC<IcreateCar> = ({ features, branchs }) => {
     },
   ];
 
+  const formattedUpdatedValues = updatedValues
+    ? { ...updatedValues, branch: updatedValues.branch?.toString() || "" }
+    : ({} as z.infer<typeof formSchema>);
+
   return (
     <CreateForm<typeof formSchema>
       inputs={inputs}
@@ -259,6 +299,9 @@ const CreateCar: FC<IcreateCar> = ({ features, branchs }) => {
       url="cars/"
       pageUrl="/cars"
       toastMessage="Avtomobil"
+      updatedValues={formattedUpdatedValues}
+      isUpdated={isUpdated}
+      id={id}
     />
   );
 };

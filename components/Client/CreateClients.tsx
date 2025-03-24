@@ -14,7 +14,7 @@ interface CreateClientProps {
 const formSchema = z.object({
   fullname: z.string().min(1),
   email: z.string().optional(),
-  phonenumber: z.string().min(1),
+  phone_number: z.string().min(1),
   address: z.string().min(1),
   passportid: z.string().min(1),
   driverLicense: z.string().min(1),
@@ -46,7 +46,7 @@ const inputs: FormInput<typeof formSchema>[] = [
         inputType: "text",
         label: "Phone number",
         placeholder: "+998930678542",
-        name: "phonenumber",
+        name: "phone_number",
       },
       {
         type: "single_line",

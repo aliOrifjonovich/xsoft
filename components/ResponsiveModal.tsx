@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { useMediaQuery } from "@react-hook/media-query";
+import { Loader2, Trash2 } from "lucide-react";
 
 interface ResponsiveModalProps {
   open: boolean;
@@ -23,6 +24,7 @@ interface ResponsiveModalProps {
   title: string;
   description: string;
   onConfirm: () => void;
+  loading?: boolean;
 }
 
 export function ResponsiveModal({
@@ -31,6 +33,7 @@ export function ResponsiveModal({
   title,
   description,
   onConfirm,
+  loading,
 }: ResponsiveModalProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -51,7 +54,14 @@ export function ResponsiveModal({
               className="bg-red-600 text-white hover:bg-red-500 hover:text-white"
               onClick={onConfirm}
             >
-              Delete
+              {loading ? (
+                <Loader2 className="animate-spin h-4 w-4" />
+              ) : (
+                <span className="flex gap-2 items-center">
+                  <Trash2 className="h-4 w-4" />
+                  Delete
+                </span>
+              )}
             </Button>
           </div>
         </DialogContent>

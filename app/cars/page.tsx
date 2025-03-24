@@ -11,7 +11,10 @@ export type Vehicle = {
   license_plate: string;
   seating_capacity: number;
   transmission: string;
-  branch: string;
+  branch: {
+    id: number;
+    name: string;
+  };
   rental_status: string;
   category: string;
   minimum_age: number;
@@ -22,10 +25,10 @@ export type Vehicle = {
   }[];
   year: number;
   color: string;
-  fuel_Type: string;
+  fuel_type: string;
   engine_size: string;
   mileage: number;
-  deposit: string;
+  deposit: number;
   rental_price_per_day: number;
   owner_name: string;
   owner_phone: string;
@@ -67,6 +70,7 @@ async function getData(): Promise<{ results: Vehicle[] }> {
 
 export default async function Page() {
   const { results: cars } = await getData();
+
   return (
     <SidebarProvider>
       <AppSidebar />

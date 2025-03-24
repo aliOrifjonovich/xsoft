@@ -63,6 +63,28 @@ async function getFeatures() {
   const { results: data } = await response.json();
   return data;
 }
+async function getCategories() {
+  const cookie = await cookies();
+  const token = cookie.get("token");
+  const response = await fetch(
+    "http://carmanagement-1-rmyc.onrender.com/api/v1/car-catergories/",
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token?.value}`,
+      },
+    }
+  );
+
+  if (!response.ok) {
+    console.error(
+      "Network response was not ok for features in create category"
+    );
+  }
+
+  return await response.json();
+}
 
 async function getById(id: number) {
   const cookie = await cookies();
@@ -84,6 +106,7 @@ async function getById(id: number) {
   const data = await response.json();
   return data;
 }
+
 export default async function CreateCars({
   searchParams,
 }: {
@@ -93,13 +116,23 @@ export default async function CreateCars({
   const getIdData = id ? await getById(id) : null;
   const branchData = await getBranchs();
   const featureData = await getFeatures();
+  const categories = await getCategories();
+
+  console.log("category", categories);
 
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <CreateCar features={featureData} branchs={branchData} />
+        <CreateCar
+          features={featureData}
+          branchs={branchData}
+          categories={categories}
+          updatedValues={getIdData}
+          isUpdated={!!id}
+          id={id}
+        />
       </SidebarInset>
     </SidebarProvider>
   );

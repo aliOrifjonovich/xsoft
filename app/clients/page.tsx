@@ -36,6 +36,8 @@ async function getData(): Promise<ClientType[]> {
 export default async function Clients() {
   const data = await getData();
 
+  console.log("data", data);
+
   return (
     <SidebarProvider>
       <AppSidebar />
