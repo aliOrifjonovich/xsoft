@@ -36,6 +36,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -58,8 +61,16 @@ export function DataTable<TData, TValue>({
   url,
   buttonTitle,
 }: DataTableProps<TData, TValue>) {
+  // const {
+  //   data: swrData,
+  //   error,
+  //   isValidating,
+  // } = useSWR(apiUrl, fetcher, {
+  //   revalidateOnFocus: false,
+  // });
 
-  
+  // const tableData = apiUrl ? swrData || [] : data || [];
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []

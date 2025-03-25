@@ -9,7 +9,13 @@ import { ICategory } from "@/interfaces/Categories";
 import { Button } from "../ui/button";
 import { Car, Pencil, Plus, Trash2, Loader2 } from "lucide-react";
 import { Input } from "../ui/input";
-import { Card, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import {
   Dialog,
   DialogContent,
@@ -20,7 +26,15 @@ import {
 } from "../ui/dialog";
 import { Label } from "../ui/label";
 import { ResponsiveModal } from "../ResponsiveModal";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
 
 // Props Interface
 interface ICategoriesProps {
@@ -51,21 +65,31 @@ const fetcher = async (url: string) => {
 };
 
 const Categories: FC<ICategoriesProps> = ({ initialData, url }) => {
+  // Refetcher with SWR hook
   const {
     data: categories,
     error,
     mutate,
   } = useSWR(url, fetcher, {
-    fallbackData: initialData, // ✅ Uses SSR data first, then fetches fresh data
+    fallbackData: initialData,
     revalidateOnFocus: false,
   });
 
+  // States
   const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(
     null
   );
+  const { data: categoryData, isLoading } = useSWR(
+    selectedCategory ? `${url}${selectedCategory.id}/` : null,
+    fetcher
+  );
+  const openCarsModal = (category: ICategory) => {
+    setSelectedCategory(category);
+  };
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Hook Form
   const categoryForm = useForm<FormValues>({
@@ -133,17 +157,27 @@ const Categories: FC<ICategoriesProps> = ({ initialData, url }) => {
     setLoading(false);
   }
 
+  // Search by Category
+  const filteredCategories = categories?.filter((category: ICategory) =>
+    category.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (error) return <p className="text-red-500">Failed to load categories</p>;
 
   return (
     <>
       <div className="px-4 py-2 flex flex-col gap-4">
         <div className="container mx-auto py-5">
-          <h1 className="text-2xl font-bold mb-4">Car Categories</h1>
+          <h1 className="text-2xl font-bold mb-4">Avtomobil kategoriyalar</h1>
 
           {/* Add Category Button */}
           <div className="flex gap-4 mb-8 w-full items-center justify-between">
-            <Input placeholder="New category name" className="w-1/2 md:w-2/3" />
+            <Input
+              placeholder="Izlash..."
+              className="w-1/2 md:w-2/3"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
             <Button className="w-1/2 md:w-max" onClick={() => openModal()}>
               <Plus />
               Add Category
@@ -152,45 +186,73 @@ const Categories: FC<ICategoriesProps> = ({ initialData, url }) => {
 
           {/* Categories List */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-            {categories?.map((category: ICategory) => (
+            {filteredCategories?.map((category: ICategory) => (
               <Card key={category.id} className="shadow-md">
                 <CardHeader>
-                  <CardTitle>{category.name}</CardTitle>
+                  <CardTitle className="capitalize text-3xl">
+                    {category.name}
+                  </CardTitle>
+                  <CardDescription className="text-md">
+                    {categoryData?.cars?.length} ta avtomobillar mavjud
+                  </CardDescription>
                 </CardHeader>
                 <CardFooter className="flex justify-between">
                   {/* View Cars */}
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button variant="outline">
+                      <Button
+                        variant="outline"
+                        onClick={() => openCarsModal(category)}
+                      >
                         <Car className="mr-2 h-4 w-4" />
                         View Cars
                       </Button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>{category.name}</DialogTitle>
+                        <DialogTitle className="capitalize">
+                          Cars in {category.name}
+                        </DialogTitle>
                       </DialogHeader>
-                      <Table>
-                        <TableCaption>
-                          List of cars in {category.name} category
-                        </TableCaption>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>ID</TableHead>
-                            <TableHead>Car Name</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {/* Example Static Data */}
-                          <TableRow>
-                            <TableCell className="font-medium">hello</TableCell>
-                            <TableCell>Toyota Camry</TableCell>
-                          </TableRow>
-                        </TableBody>
-                      </Table>
+                      {isLoading ? (
+                        <div className="flex justify-center items-center py-4">
+                          <Loader2 className="animate-spin h-6 w-6 text-gray-500" />
+                        </div>
+                      ) : categoryData?.cars?.length > 0 ? (
+                        <Table>
+                          <TableCaption>
+                            List of cars in {category.name} category
+                          </TableCaption>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>ID</TableHead>
+                              <TableHead>Car Name</TableHead>
+                              <TableHead>License Plate</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {categoryData.cars.map((car: any) => (
+                              <TableRow key={car.id}>
+                                <TableCell className="font-medium">
+                                  {car.id}
+                                </TableCell>
+                                <TableCell>
+                                  {car.brand} {car.model}
+                                </TableCell>
+                                <TableCell>{car.license_plate}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      ) : (
+                        <p className="text-gray-500">
+                          No cars found in this category.
+                        </p>
+                      )}
                     </DialogContent>
                   </Dialog>
 
+                  {/* Buttons of Card */}
                   <div className="flex gap-2">
                     {/* Edit Category */}
                     <Button
@@ -207,13 +269,9 @@ const Categories: FC<ICategoriesProps> = ({ initialData, url }) => {
                       className="bg-red-600 text-white hover:bg-red-500"
                       size="icon"
                       onClick={() => openDeleteModal(category)}
-                      disabled={loading} // Disable while deleting
+                      disabled={loading}
                     >
-                      {loading ? (
-                        <Loader2 className="animate-spin h-4 w-4" />
-                      ) : (
-                        <Trash2 className="h-4 w-4" />
-                      )}
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </CardFooter>
