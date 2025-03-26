@@ -1,4 +1,7 @@
 export interface ICategory {
-  id: number;
-  name: string;
+  category: {
+    id: number;
+    name: string;
+  };
+  number_of_cars: number;
 }

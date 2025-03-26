@@ -159,7 +159,7 @@ const Categories: FC<ICategoriesProps> = ({ initialData, url }) => {
 
   // Search by Category
   const filteredCategories = categories?.filter((category: ICategory) =>
-    category.name.toLowerCase().includes(searchTerm.toLowerCase())
+    category?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (error) return <p className="text-red-500">Failed to load categories</p>;

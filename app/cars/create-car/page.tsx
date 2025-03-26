@@ -2,7 +2,9 @@ import { AppSidebar } from "@/components/app-sidebar";
 import CreateCar from "@/components/Cars/CreateCar";
 import Header from "@/components/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { ICategory } from "@/interfaces/Categories";
 import { cookies } from "next/headers";
+import { it } from "node:test";
 import { FC } from "react";
 export interface IBranches {
   id: number;
@@ -83,7 +85,9 @@ async function getCategories() {
     );
   }
 
-  return await response.json();
+  const data = await response.json();
+  const categoryData = data.map((item: ICategory) => item.category);
+  return categoryData;
 }
 
 async function getById(id: number) {
@@ -117,8 +121,6 @@ export default async function CreateCars({
   const branchData = await getBranchs();
   const featureData = await getFeatures();
   const categories = await getCategories();
-
-  console.log("category", categories);
 
   return (
     <SidebarProvider>

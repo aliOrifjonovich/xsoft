@@ -41,6 +41,7 @@ interface ICreateFormProps<T extends ZodType> {
   isUpdated?: boolean;
   toastMessage?: string;
   id?: number;
+  onCustomSubmit?: (values: z.infer<T>, form: any) => void;
 }
 
 const CreateForm = <T extends ZodType>({
@@ -52,6 +53,7 @@ const CreateForm = <T extends ZodType>({
   updatedValues,
   isUpdated,
   toastMessage,
+  onCustomSubmit,
   id,
 }: ICreateFormProps<T>) => {
   const form = useForm<z.infer<T>>({
@@ -76,87 +78,179 @@ const CreateForm = <T extends ZodType>({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      const formData = new FormData();
-      const token = Cookies.get("token");
+    if (onCustomSubmit) {
+      return onCustomSubmit(values, {
+        onSubmit: async (combinedValues: any) => {
+          // Your existing submit logic but with combinedValues
+          try {
+            const formData = new FormData();
+            const token = Cookies.get("token");
+            const images = values.images ?? [];
+            images.forEach((image: { file: Blob }, index: number) => {
+              formData.append(
+                `images`,
+                image.file,
+                `image_${index}.${image.file.type.split("/")[1]}`
+              );
+            });
 
-      // Ensure `values.images` is always an array
-      const images = values.images ?? [];
-      images.forEach((image: { file: Blob }, index: number) => {
-        formData.append(
-          `images`,
-          image.file,
-          `image_${index}.${image.file.type.split("/")[1]}`
-        );
-      });
+            // Process form data
+            // ... existing form data processing logic
 
-      Object.keys(values).forEach((key) => {
-        if (key !== "images" && key !== "features") {
-          let value = values[key];
+            // Use the combined values from the custom submit handler
+            Object.keys(combinedValues).forEach((key) => {
+              // ... your existing logic to add to formData
+              if (key !== "images" && key !== "features") {
+                let value = values[key];
 
-          if (value instanceof Date) {
-            value = format(value, "yyyy-MM-dd");
+                if (value instanceof Date) {
+                  value = format(value, "yyyy-MM-dd");
+                }
+
+                formData.append(key, String(value));
+              }
+            });
+            if (Array.isArray(values.features) && values.features.length > 0) {
+              values.features.forEach((featureId: number) => {
+                formData.append("features", String(featureId));
+              });
+            } else {
+              console.warn("No features selected");
+            }
+
+            const response = await fetch(
+              id
+                ? `https://carmanagement-1-rmyc.onrender.com/api/v1/${url}${id}/`
+                : `https://carmanagement-1-rmyc.onrender.com/api/v1/${url}`,
+              {
+                method: isUpdated ? "PUT" : "POST",
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+                body: formData,
+              }
+            );
+
+            if (!response.ok) {
+              throw new Error("Failed to create car.");
+            }
+
+            pageUrl && router.push(pageUrl);
+
+            const message = id
+              ? `${toastMessage} muvaffaqiyatli o'zgartirildi`
+              : `${toastMessage} muvaffaqiyatli qo'shildi`;
+
+            toast.success(message, {
+              position: "top-right",
+              closeButton: true,
+              style: {
+                backgroundColor: "green",
+                color: "white",
+              },
+            });
+
+            // ... rest of submit logic
+          } catch (error: any) {
+            // ... error handling
+            toast.error(
+              error.message ||
+                `${toastMessage} qo'shilmadi. Iltimos qayta urinib ko'ring`,
+              {
+                position: "top-right",
+                closeButton: true,
+                style: {
+                  border: "1px solid red",
+                  backgroundColor: "red",
+                  color: "white",
+                },
+              }
+            );
           }
-
-          formData.append(key, String(value));
-        }
-      });
-
-      // Append features as separate entries
-      if (Array.isArray(values.features) && values.features.length > 0) {
-        values.features.forEach((featureId: number) => {
-          formData.append("features", String(featureId));
-        });
-      } else {
-        console.warn("No features selected");
-      }
-
-      const response = await fetch(
-        id
-          ? `https://carmanagement-1-rmyc.onrender.com/api/v1/${url}${id}/`
-          : `https://carmanagement-1-rmyc.onrender.com/api/v1/${url}`,
-        {
-          method: isUpdated ? "PUT" : "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to create car.");
-      }
-
-      pageUrl && router.push(pageUrl);
-
-      const message = id
-        ? `${toastMessage} muvaffaqiyatli o'zgartirildi`
-        : `${toastMessage} muvaffaqiyatli qo'shildi`;
-
-      toast.success(message, {
-        position: "top-right",
-        closeButton: true,
-        style: {
-          backgroundColor: "green",
-          color: "white",
         },
       });
-    } catch (error: any) {
-      toast.error(
-        error.message ||
-          `${toastMessage} qo'shilmadi. Iltimos qayta urinib ko'ring`,
-        {
-          position: "top-right",
-          closeButton: true,
-          style: {
-            border: "1px solid red",
-            backgroundColor: "red",
-            color: "white",
-          },
-        }
-      );
     }
+    // try {
+    //   const formData = new FormData();
+    //   const token = Cookies.get("token");
+
+    //   // Ensure `values.images` is always an array
+    //   const images = values.images ?? [];
+    //   images.forEach((image: { file: Blob }, index: number) => {
+    //     formData.append(
+    //       `images`,
+    //       image.file,
+    //       `image_${index}.${image.file.type.split("/")[1]}`
+    //     );
+    //   });
+
+    //   Object.keys(values).forEach((key) => {
+    //     if (key !== "images" && key !== "features") {
+    //       let value = values[key];
+
+    //       if (value instanceof Date) {
+    //         value = format(value, "yyyy-MM-dd");
+    //       }
+
+    //       formData.append(key, String(value));
+    //     }
+    //   });
+
+    //   // Append features as separate entries
+    //   if (Array.isArray(values.features) && values.features.length > 0) {
+    //     values.features.forEach((featureId: number) => {
+    //       formData.append("features", String(featureId));
+    //     });
+    //   } else {
+    //     console.warn("No features selected");
+    //   }
+
+    //   const response = await fetch(
+    //     id
+    //       ? `https://carmanagement-1-rmyc.onrender.com/api/v1/${url}${id}/`
+    //       : `https://carmanagement-1-rmyc.onrender.com/api/v1/${url}`,
+    //     {
+    //       method: isUpdated ? "PUT" : "POST",
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //       body: formData,
+    //     }
+    //   );
+
+    //   if (!response.ok) {
+    //     throw new Error("Failed to create car.");
+    //   }
+
+    //   pageUrl && router.push(pageUrl);
+
+    //   const message = id
+    //     ? `${toastMessage} muvaffaqiyatli o'zgartirildi`
+    //     : `${toastMessage} muvaffaqiyatli qo'shildi`;
+
+    //   toast.success(message, {
+    //     position: "top-right",
+    //     closeButton: true,
+    //     style: {
+    //       backgroundColor: "green",
+    //       color: "white",
+    //     },
+    //   });
+    // } catch (error: any) {
+    //   toast.error(
+    //     error.message ||
+    //       `${toastMessage} qo'shilmadi. Iltimos qayta urinib ko'ring`,
+    //     {
+    //       position: "top-right",
+    //       closeButton: true,
+    //       style: {
+    //         border: "1px solid red",
+    //         backgroundColor: "red",
+    //         color: "white",
+    //       },
+    //     }
+    //   );
+    // }
   }
 
   return (

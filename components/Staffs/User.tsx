@@ -84,6 +84,7 @@ const Staffs: FC<UserProps> = ({ data }) => {
         columns={columns}
         data={data || []}
         searchcolumns="fullname"
+        apiURL="employee/"
         url="/staffs/create-staffs"
         buttonTitle="Xodim Qo'shish"
       />

@@ -13,8 +13,12 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
+import { mutate } from "swr";
+import { toast } from "sonner";
+import { BASE_URL } from "@/components/data-table";
 
 export type BranchesType = {
   id: number;
@@ -24,6 +28,8 @@ export type BranchesType = {
   total_area: number;
   google_map_link: string;
   yandex_map_link: string;
+  latitude: string;
+  longitude: string;
 };
 
 export const columns: ColumnDef<BranchesType>[] = [
@@ -106,27 +112,40 @@ export const columns: ColumnDef<BranchesType>[] = [
 
       const handleDelete = async (id: number) => {
         setLoading(true);
-        // const token = Cookies.get("token");
+        const token = Cookies.get("token");
 
-        const response = await fetch(
-          `https://carmanagement-1-rmyc.onrender.com/api/v1/branchs/${id}/`,
-          {
-            method: "DELETE",
-            // headers: {
-            //   Authorization: `Bearer ${token}`,
-            // },
+        try {
+          const response = await fetch(
+            `https://carmanagement-1-rmyc.onrender.com/api/v1/branchs/${id}/`,
+            {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (response.ok) {
+            await mutate(`${BASE_URL}branchs?page=1&limit=50`, undefined, {
+              revalidate: true,
+            });
+          } else {
+            console.error("Failed to delete branch");
           }
-        );
-
-        if (response.ok) {
-          // mutate();
-          console.log("hello");
-        } else {
-          console.error("Failed to delete category");
+        } catch (error) {
+          console.error("Error deleting branch:", error);
+        } finally {
+          setLoading(false);
+          setOpen(false);
+          toast.success("Branch deleted successfully", {
+            position: "top-right",
+            closeButton: true,
+            style: {
+              backgroundColor: "green",
+              color: "white",
+            },
+          });
         }
-        setLoading(false);
-        setOpen(false);
-        // window.location.reload();
       };
 
       return (
@@ -156,7 +175,7 @@ export const columns: ColumnDef<BranchesType>[] = [
                 {loading ? (
                   <Loader2 className="animate-spin h-4 w-4" />
                 ) : (
-                  <span>
+                  <span className="flex items-center gap-2">
                     <Trash2 className="h-4 w-4" />
                     Delete
                   </span>

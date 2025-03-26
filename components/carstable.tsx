@@ -269,7 +269,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                       {car.brand}
                     </div>
                   </TableCell>
-                  <TableCell className="capitalize">{car.category}</TableCell>
+                  {/* <TableCell className="capitalize">{car.category}</TableCell> */}
                   <TableCell className="capitalize">
                     {car.license_plate}
                   </TableCell>
@@ -556,13 +556,13 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                           {/* Photos Tab */}
                           <TabsContent value="photos">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                              {car.images?.map((photo, index) => (
+                              {car?.images?.map((photo, index) => (
                                 <div
                                   key={index}
                                   className="rounded-lg overflow-hidden"
                                 >
                                   <Image
-                                    src={`https://carmanagement-1-rmyc.onrender.com${photo.photo}`}
+                                    src={`https://carmanagement-1-rmyc.onrender.com${photo?.photo}`}
                                     alt={`${car?.brand}`}
                                     width={500}
                                     height={300}
@@ -581,7 +581,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                   Car Features
                                 </h3>
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                  {car.features?.map((feature, index) => {
+                                  {car?.features?.map((feature, index) => {
                                     const FeatureIcon = FeaturesIcon(
                                       feature.icon
                                     );
@@ -592,7 +592,7 @@ export default function CarsTable({ data = [], buttonTitle }: CarsTableProps) {
                                         className="flex items-center gap-4"
                                       >
                                         {FeatureIcon && <FeatureIcon />}
-                                        <span>{feature.name}</span>
+                                        <span>{feature?.name}</span>
                                       </div>
                                     );
                                   })}

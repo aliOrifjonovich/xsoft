@@ -7,6 +7,7 @@ import NextTopLoader from "nextjs-toploader";
 import { UserInterface, UserProvider } from "@/providers/UserProvider";
 import { Toaster } from "sonner";
 import { cookies } from "next/headers";
+import YandexMapScript from "@/components/YandexMapScript";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -72,6 +73,7 @@ export default async function RootLayout({
               color="oklch(.551 .027 264.364)"
               showSpinner={false}
             />
+            <YandexMapScript />
             {children}
             <Toaster />
           </UserProvider>

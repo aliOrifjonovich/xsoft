@@ -42,6 +42,8 @@ const fakedata = [
   },
 ];
 const Client: FC<ClientProps> = ({ data }) => {
+  console.log("datas", data);
+
   return (
     <div className="px-4 py-2 flex flex-col gap-4">
       <div className="flex flex-col w-full  gap-4">
@@ -79,6 +81,7 @@ const Client: FC<ClientProps> = ({ data }) => {
         columns={columns}
         data={data || []}
         searchcolumns="fullname"
+        apiURL="client/"
         url="/clients/create-clients"
         buttonTitle="Mijoz Qo'shish"
       />

@@ -10,7 +10,7 @@ async function getData(): Promise<ClientType[]> {
   const token = (await cookieStore).get("token")?.value;
 
   const response = await fetch(
-    "https://carmanagement-1-rmyc.onrender.com/api/v1/client?page=1&limit=100",
+    "https://carmanagement-1-rmyc.onrender.com/api/v1/client/",
     {
       method: "GET",
       headers: {
@@ -35,8 +35,6 @@ async function getData(): Promise<ClientType[]> {
 
 export default async function Clients() {
   const data = await getData();
-
-  console.log("data", data);
 
   return (
     <SidebarProvider>

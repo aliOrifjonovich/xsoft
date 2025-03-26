@@ -24,6 +24,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { mutate } from "swr";
+import { BASE_URL } from "@/components/data-table";
+import { toast } from "sonner";
+import Cookies from "js-cookie";
 
 export type Staff = {
   id: number;
@@ -172,27 +176,40 @@ export const columns: ColumnDef<Staff>[] = [
 
       const handleDelete = async (id: number) => {
         setLoading(true);
-        // const token = Cookies.get("token");
+        const token = Cookies.get("token");
 
-        const response = await fetch(
-          `https://carmanagement-1-rmyc.onrender.com/api/v1/employee/${id}/`,
-          {
-            method: "DELETE",
-            // headers: {
-            //   Authorization: `Bearer ${token}`,
-            // },
+        try {
+          const response = await fetch(
+            `https://carmanagement-1-rmyc.onrender.com/api/v1/employee/${id}/`,
+            {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (response.ok) {
+            await mutate(`${BASE_URL}employee/`, undefined, {
+              revalidate: true,
+            });
+          } else {
+            console.error("Failed to delete category");
           }
-        );
-
-        if (response.ok) {
-          // mutate();
-          console.log("hello");
-        } else {
+        } catch (error) {
           console.error("Failed to delete category");
+        } finally {
+          setLoading(false);
+          setOpen(false);
+          toast.success("Staff deleted successfully", {
+            position: "top-right",
+            closeButton: true,
+            style: {
+              backgroundColor: "green",
+              color: "white",
+            },
+          });
         }
-        setLoading(false);
-        setOpen(false);
-        // window.location.reload();
       };
 
       return (

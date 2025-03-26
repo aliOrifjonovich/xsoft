@@ -15,6 +15,9 @@ import { cn } from "@/lib/utils";
 import { JSX, useState } from "react";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
 import Link from "next/link";
+import { mutate } from "swr";
+import Cookies from "js-cookie";
+import { BASE_URL } from "@/components/data-table";
 
 export type ClientType = {
   id: number;
@@ -143,21 +146,22 @@ export const columns: ColumnDef<ClientType>[] = [
 
       const handleDelete = async (id: number) => {
         setLoading(true);
-        // const token = Cookies.get("token");
+        const token = Cookies.get("token");
 
         const response = await fetch(
           `https://carmanagement-1-rmyc.onrender.com/api/v1/client/${id}/`,
           {
             method: "DELETE",
-            // headers: {
-            //   Authorization: `Bearer ${token}`,
-            // },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
         if (response.ok) {
-          // mutate();
-          console.log("hello");
+          await mutate(`${BASE_URL}client/`, undefined, {
+            revalidate: true,
+          });
         } else {
           console.error("Failed to delete category");
         }

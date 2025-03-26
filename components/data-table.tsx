@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { format, isWithinInterval, parseISO } from "date-fns";
-import { CalendarIcon, Plus } from "lucide-react";
+import { CalendarIcon, Loader2, Plus } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import {
   ColumnDef,
@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/popover";
 import { CombinedPagination } from "@/components/DataTablePaginationProps";
 import { DataTableViewOptions } from "@/components/DataTableViewOptions";
-
 import {
   Table,
   TableBody,
@@ -37,8 +36,7 @@ import {
 } from "@/components/ui/table";
 import Link from "next/link";
 import useSWR from "swr";
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+import Cookies from "js-cookie";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -47,11 +45,14 @@ interface DataTableProps<TData, TValue> {
   searchcolumns?: string | undefined;
   url?: string | undefined;
   buttonTitle?: string;
+  apiURL?: string;
 }
 interface RentalData {
   pickup: { date: string };
   return: { date: string };
 }
+
+export const BASE_URL = "https://carmanagement-1-rmyc.onrender.com/api/v1/";
 
 export function DataTable<TData, TValue>({
   columns,
@@ -60,16 +61,20 @@ export function DataTable<TData, TValue>({
   searchcolumns,
   url,
   buttonTitle,
+  apiURL,
 }: DataTableProps<TData, TValue>) {
-  // const {
-  //   data: swrData,
-  //   error,
-  //   isValidating,
-  // } = useSWR(apiUrl, fetcher, {
-  //   revalidateOnFocus: false,
-  // });
+  // -------------- Fetch data from the server ------------------------------------/////
+  const token = Cookies.get("token");
+  const fetcher = (url: string) =>
+    fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    }).then((res) => res.json());
 
-  // const tableData = apiUrl ? swrData || [] : data || [];
+  const { data: swrData, isLoading } = useSWR(`${BASE_URL}${apiURL}`, fetcher, {
+    fallbackData: data,
+  });
+
+  ////////////////////////////////////////////////////////////////////////////////////////
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -78,9 +83,11 @@ export function DataTable<TData, TValue>({
   const [rowSelection, setRowSelection] = React.useState({});
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
 
+  // Filter data based on date range
   const filteredData = React.useMemo(() => {
-    if (!isReservation || !dateRange?.from || !dateRange?.to) return data;
-    return data.filter((item) => {
+    if (!isReservation || !dateRange?.from || !dateRange?.to)
+      return swrData?.results ?? swrData;
+    return swrData?.results?.filter((item: TData) => {
       const rentalItem = item as RentalData;
       const pickupDate = parseISO(rentalItem.pickup.date);
       const returnDate = parseISO(rentalItem.return.date);
@@ -95,8 +102,9 @@ export function DataTable<TData, TValue>({
         })
       );
     });
-  }, [data, dateRange, isReservation]);
+  }, [swrData, dateRange, isReservation]);
 
+  // React Table
   const table = useReactTable({
     data: filteredData,
     columns,
@@ -177,52 +185,58 @@ export function DataTable<TData, TValue>({
             </Link>
           </div>
         </div>
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
+        {isLoading ? (
+          <div className="flex justify-center items-center h-32">
+            <Loader2 className="animate-spin" />
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        )}
       </div>
       <CombinedPagination table={table} />
     </div>

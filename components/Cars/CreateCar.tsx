@@ -22,7 +22,7 @@ const formSchema = z.object({
   year: z.preprocess((val) => Number(val), z.number().min(1)),
   deposit: z.preprocess((val) => Number(val), z.number().min(1)),
   minimum_age: z.preprocess((val) => Number(val), z.number().min(1)),
-  branch: z.preprocess((val) => Number(val), z.number().min(1)),
+  branchs: z.preprocess((val) => Number(val), z.number().min(1)),
   category: z.preprocess((val) => Number(val), z.number().min(1)),
   features: z.array(z.number().min(1)),
   engine_size: z.enum([
@@ -178,19 +178,14 @@ const CreateCar: FC<IcreateCar> = ({
         {
           type: "select",
           label: "Filialni tanlang",
-          name: "branch",
+          name: "branchs",
           placeholder: "Yunusobod",
           options:
-            branchs?.map(
-              (branch: IBranches) => (
-                console.log(branch.name, "branch"),
-                {
-                  id: branch.id,
-                  label: branch.name,
-                  value: branch.id.toString(),
-                }
-              )
-            ) || [],
+            branchs?.map((item: IBranches) => ({
+              id: item?.id,
+              label: item?.name,
+              value: item.id?.toString(),
+            })) || [],
         },
         {
           type: "select",
@@ -198,16 +193,11 @@ const CreateCar: FC<IcreateCar> = ({
           name: "category",
           placeholder: "Sedan",
           options:
-          categories?.map(
-              (category: ICategory) => (
-                console.log(category.name, "branch"),
-                {
-                  id: category.id,
-                  label: category.name,
-                  value: category.id.toString(),
-                }
-              )
-            ) || [],
+            categories?.map((item: ICategory) => ({
+              id: item?.id,
+              label: item?.name,
+              value: item?.id?.toString(),
+            })) || [],
         },
       ],
     },
@@ -288,7 +278,7 @@ const CreateCar: FC<IcreateCar> = ({
   ];
 
   const formattedUpdatedValues = updatedValues
-    ? { ...updatedValues, branch: updatedValues.branch?.toString() || "" }
+    ? { ...updatedValues, branch: updatedValues?.branchs?.toString() || "" }
     : ({} as z.infer<typeof formSchema>);
 
   return (

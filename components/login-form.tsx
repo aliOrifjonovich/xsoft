@@ -55,6 +55,7 @@ export function LoginForm({
         },
       });
     } catch (error) {
+      console.error("Login failed:", error);
       toast.error("Login failed. Please try again.");
     }
   };
