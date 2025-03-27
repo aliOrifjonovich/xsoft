@@ -66,7 +66,6 @@ export default function CarsTable({
   apiURL,
 }: CarsTableProps) {
   //States
-  const router = useRouter();
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
   const [filterText, setFilterText] = useState("");

@@ -64,6 +64,86 @@ const statusStyles: Record<
   },
 };
 
+const ActionsCell = ({ row }: { row: { original: Staff } }) => {
+  const staff = row.original;
+  const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+
+  const handleDelete = async (id: number) => {
+    setLoading(true);
+    const token = Cookies.get("token");
+
+    try {
+      const response = await fetch(
+        `https://carmanagement-1-rmyc.onrender.com/api/v1/employee/${id}/`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        await mutate(`${BASE_URL}employee/`, undefined, {
+          revalidate: true,
+        });
+        toast.success("Staff deleted successfully", {
+          position: "top-right",
+          closeButton: true,
+          style: {
+            backgroundColor: "green",
+            color: "white",
+          },
+        });
+      } else {
+        console.error("Failed to delete category");
+      }
+    } catch (error) {
+      console.error("Error deleting category:", error);
+    } finally {
+      setLoading(false);
+      setOpen(false);
+    }
+  };
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <Link href={`/staffs/create-staffs?id=${staff.id}`}>
+            <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
+              <Pencil className="h-4 w-4" /> Update
+            </DropdownMenuItem>
+          </Link>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => setOpen(true)}
+            className="flex items-center gap-2 text-red-500 cursor-pointer"
+          >
+            <Trash2 className="h-4 w-4" /> Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <ResponsiveModal
+        open={open}
+        setOpen={setOpen}
+        loading={loading}
+        title={`${staff.fullname} fillialini o'chirmoqchimisiz??`}
+        description="Shu branchni o‘chirishni tasdiqlaysizmi?"
+        onConfirm={() => handleDelete(staff.id)}
+      />
+    </>
+  );
+};
+
 export const columns: ColumnDef<Staff>[] = [
   {
     id: "select",
@@ -168,86 +248,6 @@ export const columns: ColumnDef<Staff>[] = [
   {
     id: "actions",
     accessorKey: "Actions",
-    cell: ({ row }) => {
-      const staff = row.original;
-      const [open, setOpen] = React.useState(false);
-      const [loading, setLoading] = React.useState(false);
-
-      const handleDelete = async (id: number) => {
-        setLoading(true);
-        const token = Cookies.get("token");
-
-        try {
-          const response = await fetch(
-            `https://carmanagement-1-rmyc.onrender.com/api/v1/employee/${id}/`,
-            {
-              method: "DELETE",
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          if (response.ok) {
-            await mutate(`${BASE_URL}employee/`, undefined, {
-              revalidate: true,
-            });
-          } else {
-            console.error("Failed to delete category");
-          }
-        } catch (error) {
-          console.error("Error deleting category:", error);
-        } finally {
-          setLoading(false);
-          setOpen(false);
-          toast.success("Staff deleted successfully", {
-            position: "top-right",
-            closeButton: true,
-            style: {
-              backgroundColor: "green",
-              color: "white",
-            },
-          });
-        }
-      };
-
-      return (
-        <>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <Link href={`/staffs/create-staffs?id=${staff.id}`}>
-                <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-                  <Pencil className="h-4 w-4" /> Update
-                </DropdownMenuItem>
-              </Link>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => {
-                  setOpen(true);
-                }}
-                className="flex items-center gap-2 text-red-500 cursor-pointer"
-              >
-                <Trash2 className="h-4 w-4" /> Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <ResponsiveModal
-            open={open}
-            setOpen={setOpen}
-            loading={loading}
-            title={`${staff.fullname} fillialini o'chirmoqchimisiz??`}
-            description="Shu branchni o‘chirishni tasdiqlaysizmi?"
-            onConfirm={() => handleDelete(staff.id)}
-          />
-        </>
-      );
-    },
+    cell: ({ row }) => <ActionsCell row={row} />,
   },
 ];

@@ -18,6 +18,7 @@ import Link from "next/link";
 import { mutate } from "swr";
 import Cookies from "js-cookie";
 import { BASE_URL } from "@/components/data-table";
+import { toast } from "sonner";
 
 export type ClientType = {
   id: number;
@@ -49,6 +50,86 @@ const statusStyles: Record<
     bg: "bg-gray-400 text-white",
     icon: <Ban className="w-4 h-4" />,
   },
+};
+
+const ActionsCell = ({ row }: { row: { original: ClientType } }) => {
+  const client = row.original;
+  const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+
+  const handleDelete = async (id: number) => {
+    setLoading(true);
+    const token = Cookies.get("token");
+
+    try {
+      const response = await fetch(
+        `https://carmanagement-1-rmyc.onrender.com/api/v1/client/${id}/`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        await mutate(`${BASE_URL}client/`, undefined, {
+          revalidate: true,
+        });
+        toast.success("Client deleted successfully", {
+          position: "top-right",
+          closeButton: true,
+          style: {
+            backgroundColor: "green",
+            color: "white",
+          },
+        });
+      } else {
+        console.error("Failed to delete client");
+      }
+    } catch (error) {
+      console.error("Error deleting client:", error);
+    } finally {
+      setLoading(false);
+      setOpen(false);
+    }
+  };
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <Link href={`/clients/create-clients?id=${client.id}`}>
+            <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
+              <Pencil className="h-4 w-4" /> Update
+            </DropdownMenuItem>
+          </Link>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => setOpen(true)}
+            className="flex items-center gap-2 text-red-500 cursor-pointer"
+          >
+            <Trash2 className="h-4 w-4" /> Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <ResponsiveModal
+        open={open}
+        setOpen={setOpen}
+        loading={loading}
+        title={`${client.fullname} ma'lumotlarini o'chirmoqchimisiz??`}
+        description="Shu mijozni o‘chirishni tasdiqlaysizmi?"
+        onConfirm={() => handleDelete(client.id)}
+      />
+    </>
+  );
 };
 
 export const columns: ColumnDef<ClientType>[] = [
@@ -139,75 +220,6 @@ export const columns: ColumnDef<ClientType>[] = [
   {
     id: "actions",
     accessorKey: "Actions",
-    cell: ({ row }) => {
-      const client = row.original;
-      const [open, setOpen] = React.useState(false);
-      const [loading, setLoading] = React.useState(false);
-
-      const handleDelete = async (id: number) => {
-        setLoading(true);
-        const token = Cookies.get("token");
-
-        const response = await fetch(
-          `https://carmanagement-1-rmyc.onrender.com/api/v1/client/${id}/`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (response.ok) {
-          await mutate(`${BASE_URL}client/`, undefined, {
-            revalidate: true,
-          });
-        } else {
-          console.error("Failed to delete category");
-        }
-        setLoading(false);
-        setOpen(false);
-        // window.location.reload();
-      };
-
-      return (
-        <>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <Link href={`/clients/create-clients?id=${client.id}`}>
-                <DropdownMenuItem className="cursor-pointer">
-                  <Pencil className="h-4 w-4 mr-2" />
-                  Edit
-                </DropdownMenuItem>
-              </Link>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => {
-                  setOpen(true);
-                }}
-                className="flex items-center gap-2 text-red-500"
-              >
-                <Trash2 className="h-4 w-4" /> Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <ResponsiveModal
-            open={open}
-            setOpen={setOpen}
-            loading={loading}
-            title={`${client.fullname} fillialini o'chirmoqchimisiz??`}
-            description="Shu branchni o‘chirishni tasdiqlaysizmi?"
-            onConfirm={() => handleDelete(client.id)}
-          />
-        </>
-      );
-    },
+    cell: ({ row }) => <ActionsCell row={row} />,
   },
 ];

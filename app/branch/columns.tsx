@@ -32,6 +32,86 @@ export type BranchesType = {
   longitude: string;
 };
 
+const ActionsCell = ({ row }: { row: { original: BranchesType } }) => {
+  const branch = row.original;
+  const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+
+  const handleDelete = async (id: number) => {
+    setLoading(true);
+    const token = Cookies.get("token");
+
+    try {
+      const response = await fetch(
+        `https://carmanagement-1-rmyc.onrender.com/api/v1/branchs/${id}/`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        await mutate(`${BASE_URL}branchs?page=1&limit=50`, undefined, {
+          revalidate: true,
+        });
+        toast.success("Branch deleted successfully", {
+          position: "top-right",
+          closeButton: true,
+          style: {
+            backgroundColor: "green",
+            color: "white",
+          },
+        });
+      } else {
+        console.error("Failed to delete branch");
+      }
+    } catch (error) {
+      console.error("Error deleting branch:", error);
+    } finally {
+      setLoading(false);
+      setOpen(false);
+    }
+  };
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <Link href={`/branch/create-branch?id=${branch.id}`}>
+            <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
+              <Pencil className="h-4 w-4" /> Update
+            </DropdownMenuItem>
+          </Link>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={() => setOpen(true)}
+            className="flex items-center gap-2 text-red-500 cursor-pointer"
+          >
+            <Trash2 className="h-4 w-4" /> Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <ResponsiveModal
+        open={open}
+        setOpen={setOpen}
+        loading={loading}
+        title={`${branch.name} ma'lumotlarini o'chirmoqchimisiz??`}
+        description="Shu fillialni o‘chirishni tasdiqlaysizmi?"
+        onConfirm={() => handleDelete(branch.id)}
+      />
+    </>
+  );
+};
+
 export const columns: ColumnDef<BranchesType>[] = [
   {
     id: "select",
@@ -105,94 +185,6 @@ export const columns: ColumnDef<BranchesType>[] = [
   {
     id: "actions",
     accessorKey: "Actions",
-    cell: ({ row }) => {
-      const branch = row.original;
-      const [open, setOpen] = React.useState(false);
-      const [loading, setLoading] = React.useState(false);
-
-      const handleDelete = async (id: number) => {
-        setLoading(true);
-        const token = Cookies.get("token");
-
-        try {
-          const response = await fetch(
-            `https://carmanagement-1-rmyc.onrender.com/api/v1/branchs/${id}/`,
-            {
-              method: "DELETE",
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          if (response.ok) {
-            await mutate(`${BASE_URL}branchs?page=1&limit=50`, undefined, {
-              revalidate: true,
-            });
-          } else {
-            console.error("Failed to delete branch");
-          }
-        } catch (error) {
-          console.error("Error deleting branch:", error);
-        } finally {
-          setLoading(false);
-          setOpen(false);
-          toast.success("Branch deleted successfully", {
-            position: "top-right",
-            closeButton: true,
-            style: {
-              backgroundColor: "green",
-              color: "white",
-            },
-          });
-        }
-      };
-
-      return (
-        <>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <Link href={`/branch/create-branch?id=${branch.id}`}>
-                <DropdownMenuItem className="flex items-center gap-2">
-                  <Pencil className="h-4 w-4" /> Update
-                </DropdownMenuItem>
-              </Link>
-
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => {
-                  setOpen(true);
-                }}
-                className="flex items-center gap-2 text-red-500"
-              >
-                {loading ? (
-                  <Loader2 className="animate-spin h-4 w-4" />
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <Trash2 className="h-4 w-4" />
-                    Delete
-                  </span>
-                )}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <ResponsiveModal
-            open={open}
-            setOpen={setOpen}
-            loading={loading}
-            title={`${branch.name} fillialini o'chirmoqchimisiz??`}
-            description="Shu branchni o‘chirishni tasdiqlaysizmi?"
-            onConfirm={() => handleDelete(branch.id)}
-          />
-        </>
-      );
-    },
+    cell: ({ row }) => <ActionsCell row={row} />,
   },
 ];

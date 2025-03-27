@@ -2,7 +2,6 @@ import { AppSidebar } from "@/components/app-sidebar";
 import Categories from "@/components/Categories/Categories";
 import Header from "@/components/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { ICategory } from "@/interfaces/Categories";
 import { cookies } from "next/headers";
 
 async function getCategories() {
