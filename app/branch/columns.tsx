@@ -1,6 +1,6 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import { Loader2, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +15,6 @@ import React from "react";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
 import Link from "next/link";
 import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
 import { mutate } from "swr";
 import { toast } from "sonner";
 import { BASE_URL } from "@/components/data-table";

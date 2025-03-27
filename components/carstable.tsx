@@ -44,7 +44,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "./ui/pagination";
-import { useRouter } from "next/navigation";
 import { FeaturesIcon } from "@/Icons/FeaturesIcon";
 import { ResponsiveModal } from "./ResponsiveModal";
 import { Fragment } from "react";
