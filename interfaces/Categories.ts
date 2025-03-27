@@ -5,3 +5,8 @@ export interface ICategory {
   };
   number_of_cars: number;
 }
+
+export interface ICategoryItem {
+  id: number;
+  name: string;
+}

@@ -4,8 +4,6 @@ import Header from "@/components/header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ICategory } from "@/interfaces/Categories";
 import { cookies } from "next/headers";
-import { it } from "node:test";
-import { FC } from "react";
 export interface IBranches {
   id: number;
   name: string;
@@ -121,6 +119,8 @@ export default async function CreateCars({
   const branchData = await getBranchs();
   const featureData = await getFeatures();
   const categories = await getCategories();
+
+  console.log("branchData", branchData);
 
   return (
     <SidebarProvider>

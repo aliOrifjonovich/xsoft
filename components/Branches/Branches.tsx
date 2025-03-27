@@ -13,8 +13,6 @@ interface BranchesProp {
   data?: BranchesType[];
 }
 const Branches: FC<BranchesProp> = ({ data }) => {
-  console.log("branch", data);
-
   return (
     <div className="px-4 py-2 flex flex-col gap-4">
       <div className="flex flex-col w-full  gap-4">

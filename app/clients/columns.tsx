@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
-import { JSX, useState } from "react";
+import React, { JSX } from "react";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
 import Link from "next/link";
 import { mutate } from "swr";
@@ -141,8 +141,8 @@ export const columns: ColumnDef<ClientType>[] = [
     accessorKey: "Actions",
     cell: ({ row }) => {
       const client = row.original;
-      const [open, setOpen] = useState(false);
-      const [loading, setLoading] = useState(false);
+      const [open, setOpen] = React.useState(false);
+      const [loading, setLoading] = React.useState(false);
 
       const handleDelete = async (id: number) => {
         setLoading(true);

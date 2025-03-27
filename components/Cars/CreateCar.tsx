@@ -4,8 +4,7 @@ import React, { FC } from "react";
 import { z } from "zod";
 import CreateForm from "../CreateForm";
 import { IBranches, IFeatures } from "@/app/cars/create-car/page";
-import { Vehicle } from "@/app/cars/page";
-import { ICategory } from "@/interfaces/Categories";
+import { ICategoryItem } from "@/interfaces/Categories";
 
 const formSchema = z.object({
   brand: z.string().min(1),
@@ -22,7 +21,7 @@ const formSchema = z.object({
   year: z.preprocess((val) => Number(val), z.number().min(1)),
   deposit: z.preprocess((val) => Number(val), z.number().min(1)),
   minimum_age: z.preprocess((val) => Number(val), z.number().min(1)),
-  branchs: z.preprocess((val) => Number(val), z.number().min(1)),
+  branch: z.preprocess((val) => Number(val), z.number().min(1)),
   category: z.preprocess((val) => Number(val), z.number().min(1)),
   features: z.array(z.number().min(1)),
   engine_size: z.enum([
@@ -49,7 +48,7 @@ interface IcreateCar {
   features: IFeatures[];
   branchs: IBranches[];
   updatedValues: z.infer<typeof formSchema>;
-  categories: ICategory[];
+  categories: ICategoryItem[];
   isUpdated: boolean;
   id: number;
 }
@@ -62,6 +61,12 @@ const CreateCar: FC<IcreateCar> = ({
   isUpdated,
   id,
 }) => {
+  console.log(
+    "branchS",
+    categories
+    // categories.map((item: ICategory) => item)
+  );
+
   const inputs: FormInput<typeof formSchema>[] = [
     {
       title: "Avtomobil ma'lumotlari",
@@ -178,13 +183,12 @@ const CreateCar: FC<IcreateCar> = ({
         {
           type: "select",
           label: "Filialni tanlang",
-          name: "branchs",
+          name: "branch",
           placeholder: "Yunusobod",
           options:
             branchs?.map((item: IBranches) => ({
-              id: item?.id,
               label: item?.name,
-              value: item.id?.toString(),
+              value: item?.id?.toString(),
             })) || [],
         },
         {
@@ -193,8 +197,7 @@ const CreateCar: FC<IcreateCar> = ({
           name: "category",
           placeholder: "Sedan",
           options:
-            categories?.map((item: ICategory) => ({
-              id: item?.id,
+            categories?.map((item: ICategoryItem) => ({
               label: item?.name,
               value: item?.id?.toString(),
             })) || [],
@@ -278,8 +281,15 @@ const CreateCar: FC<IcreateCar> = ({
   ];
 
   const formattedUpdatedValues = updatedValues
-    ? { ...updatedValues, branch: updatedValues?.branchs?.toString() || "" }
+    ? {
+        ...updatedValues,
+        branch: updatedValues?.branch || 0,
+        category: updatedValues?.category || 0,
+        images: updatedValues?.images ?? [],
+      }
     : ({} as z.infer<typeof formSchema>);
+
+  console.log("formattedUpdatedValues", formattedUpdatedValues);
 
   return (
     <CreateForm<typeof formSchema>

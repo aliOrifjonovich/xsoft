@@ -35,6 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import { Vehicle } from "@/app/cars/page";
 
 // Props Interface
 interface ICategoriesProps {
@@ -79,13 +80,22 @@ const Categories: FC<ICategoriesProps> = ({ initialData, url }) => {
   const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(
     null
   );
+
+  // Fetch cars of selected category
+  const categoryId = selectedCategory?.category?.id;
   const { data: categoryData, isLoading } = useSWR(
-    selectedCategory ? `${url}${selectedCategory.id}/` : null,
+    categoryId ? `${url}${categoryId}/` : null,
     fetcher
   );
+
+  // Open Cars Modal
   const openCarsModal = (category: ICategory) => {
-    setSelectedCategory(category);
+    if (category.category) {
+      setSelectedCategory(category);
+    }
   };
+
+  // States
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
@@ -100,7 +110,9 @@ const Categories: FC<ICategoriesProps> = ({ initialData, url }) => {
   // Open modal for add/edit
   const openModal = (category: ICategory | null = null) => {
     setSelectedCategory(category);
-    categoryForm.reset(category ? { name: category.name } : { name: "" });
+    categoryForm.reset(
+      category ? { name: category?.category?.name } : { name: "" }
+    );
     setIsOpen(true);
   };
 
@@ -114,7 +126,9 @@ const Categories: FC<ICategoriesProps> = ({ initialData, url }) => {
   async function onSubmit(data: FormValues) {
     setLoading(true);
     const token = Cookies.get("token");
-    const endpoint = selectedCategory ? `${url}${selectedCategory.id}/` : url;
+    const endpoint = selectedCategory
+      ? `${url}${selectedCategory?.category?.id}/`
+      : url;
 
     const response = await fetch(endpoint, {
       method: selectedCategory ? "PUT" : "POST",
@@ -141,7 +155,7 @@ const Categories: FC<ICategoriesProps> = ({ initialData, url }) => {
     setLoading(true);
     const token = Cookies.get("token");
 
-    const response = await fetch(`${url}${selectedCategory.id}/`, {
+    const response = await fetch(`${url}${selectedCategory?.category?.id}/`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -157,9 +171,11 @@ const Categories: FC<ICategoriesProps> = ({ initialData, url }) => {
     setLoading(false);
   }
 
+  console.log("selectedCategory", selectedCategory);
+
   // Search by Category
-  const filteredCategories = categories?.filter((category: ICategory) =>
-    category?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCategories = categories?.filter((item: ICategory) =>
+    item.category.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (error) return <p className="text-red-500">Failed to load categories</p>;
@@ -186,97 +202,101 @@ const Categories: FC<ICategoriesProps> = ({ initialData, url }) => {
 
           {/* Categories List */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-            {filteredCategories?.map((category: ICategory) => (
-              <Card key={category.id} className="shadow-md">
-                <CardHeader>
-                  <CardTitle className="capitalize text-3xl">
-                    {category.name}
-                  </CardTitle>
-                  <CardDescription className="text-md">
-                    {categoryData?.cars?.length} ta avtomobillar mavjud
-                  </CardDescription>
-                </CardHeader>
-                <CardFooter className="flex justify-between">
-                  {/* View Cars */}
-                  <Dialog>
-                    <DialogTrigger asChild>
+            {filteredCategories?.map(
+              ({ category, number_of_cars }: ICategory) => (
+                <Card key={category.id} className="shadow-md">
+                  <CardHeader>
+                    <CardTitle className="capitalize text-3xl">
+                      {category.name}
+                    </CardTitle>
+                    <CardDescription className="text-md">
+                      {number_of_cars} ta avtomobillar mavjud
+                    </CardDescription>
+                  </CardHeader>
+                  <CardFooter className="flex justify-between">
+                    {/* View Cars */}
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          onClick={() =>
+                            openCarsModal({ category, number_of_cars })
+                          }
+                        >
+                          <Car className="mr-2 h-4 w-4" />
+                          View Cars
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Cars in {category.name}</DialogTitle>
+                        </DialogHeader>
+                        {isLoading ? (
+                          <div className="flex justify-center items-center py-4">
+                            <Loader2 className="animate-spin h-6 w-6 text-gray-500" />
+                          </div>
+                        ) : categoryData?.cars?.length > 0 ? (
+                          <Table>
+                            <TableCaption>
+                              List of cars in {category.name} category
+                            </TableCaption>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead>ID</TableHead>
+                                <TableHead>Car Name</TableHead>
+                                <TableHead>License Plate</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {categoryData.cars.map((car: Vehicle) => (
+                                <TableRow key={car.id}>
+                                  <TableCell className="font-medium">
+                                    {car.id}
+                                  </TableCell>
+                                  <TableCell>
+                                    {car.brand} {car.model}
+                                  </TableCell>
+                                  <TableCell>{car.license_plate}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        ) : (
+                          <p className="text-gray-500">
+                            No cars found in this category.
+                          </p>
+                        )}
+                      </DialogContent>
+                    </Dialog>
+
+                    {/* Buttons of Card */}
+                    <div className="flex gap-2">
+                      {/* Edit Category */}
                       <Button
                         variant="outline"
-                        onClick={() => openCarsModal(category)}
+                        size="icon"
+                        onClick={() => openModal({ category, number_of_cars })}
                       >
-                        <Car className="mr-2 h-4 w-4" />
-                        View Cars
+                        <Pencil className="h-4 w-4" />
                       </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle className="capitalize">
-                          Cars in {category.name}
-                        </DialogTitle>
-                      </DialogHeader>
-                      {isLoading ? (
-                        <div className="flex justify-center items-center py-4">
-                          <Loader2 className="animate-spin h-6 w-6 text-gray-500" />
-                        </div>
-                      ) : categoryData?.cars?.length > 0 ? (
-                        <Table>
-                          <TableCaption>
-                            List of cars in {category.name} category
-                          </TableCaption>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>ID</TableHead>
-                              <TableHead>Car Name</TableHead>
-                              <TableHead>License Plate</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {categoryData.cars.map((car: any) => (
-                              <TableRow key={car.id}>
-                                <TableCell className="font-medium">
-                                  {car.id}
-                                </TableCell>
-                                <TableCell>
-                                  {car.brand} {car.model}
-                                </TableCell>
-                                <TableCell>{car.license_plate}</TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      ) : (
-                        <p className="text-gray-500">
-                          No cars found in this category.
-                        </p>
-                      )}
-                    </DialogContent>
-                  </Dialog>
 
-                  {/* Buttons of Card */}
-                  <div className="flex gap-2">
-                    {/* Edit Category */}
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => openModal(category)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-
-                    {/* Delete Category */}
-                    <Button
-                      variant="outline"
-                      className="bg-red-600 text-white hover:bg-red-500"
-                      size="icon"
-                      onClick={() => openDeleteModal(category)}
-                      disabled={loading}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardFooter>
-              </Card>
-            ))}
+                      {/* Delete Category */}
+                      <Button
+                        variant="outline"
+                        className="bg-red-600 text-white hover:bg-red-500"
+                        size="icon"
+                        onClick={() =>
+                          openDeleteModal({ category, number_of_cars })
+                        }
+                        disabled={loading}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardFooter>
+                </Card>
+              )
+            )}
           </div>
         </div>
 
@@ -316,7 +336,7 @@ const Categories: FC<ICategoriesProps> = ({ initialData, url }) => {
       <ResponsiveModal
         open={isDeleteOpen}
         setOpen={setIsDeleteOpen}
-        title={`Are you sure you want to delete "${selectedCategory?.name}"?`}
+        title={`Are you sure you want to delete "${selectedCategory?.category?.name}"?`}
         description="This action cannot be undone."
         onConfirm={handleDelete}
         loading={loading}

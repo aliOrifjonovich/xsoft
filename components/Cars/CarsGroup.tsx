@@ -78,7 +78,11 @@ const CarsGroup: FC<CarsGroupProps> = ({ data }) => {
           ))}
         </div>
       </div>
-      <CarsTable data={data || []} buttonTitle={"Avtomobil qo'shish"} />
+      <CarsTable
+        data={data || []}
+        buttonTitle={"Avtomobil qo'shish"}
+        apiURL="cars/"
+      />
     </div>
   );
 };

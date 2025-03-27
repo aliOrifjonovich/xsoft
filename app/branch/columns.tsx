@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
+import React from "react";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
 import Link from "next/link";
 import Cookies from "js-cookie";
@@ -107,8 +107,8 @@ export const columns: ColumnDef<BranchesType>[] = [
     accessorKey: "Actions",
     cell: ({ row }) => {
       const branch = row.original;
-      const [open, setOpen] = useState(false);
-      const [loading, setLoading] = useState(false);
+      const [open, setOpen] = React.useState(false);
+      const [loading, setLoading] = React.useState(false);
 
       const handleDelete = async (id: number) => {
         setLoading(true);

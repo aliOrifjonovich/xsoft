@@ -16,7 +16,10 @@ export type Vehicle = {
     name: string;
   };
   rental_status: string;
-  category: string;
+  category: {
+    id: number;
+    name: string;
+  };
   minimum_age: number;
   images: {
     car_id: number;

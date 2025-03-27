@@ -30,9 +30,7 @@ async function getCategories() {
     return [];
   }
 
-  const data = await response.json();
-  const categoryData = data.map((item: ICategory) => item.category);
-  return categoryData;
+  return await response.json();
 }
 
 export default async function Category() {

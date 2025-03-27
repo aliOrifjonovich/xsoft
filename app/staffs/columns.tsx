@@ -19,10 +19,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 // import Image from "next/image";
-import { JSX, useState } from "react";
+import React, { JSX } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
-import { useRouter } from "next/router";
 import Link from "next/link";
 import { mutate } from "swr";
 import { BASE_URL } from "@/components/data-table";
@@ -171,8 +170,8 @@ export const columns: ColumnDef<Staff>[] = [
     accessorKey: "Actions",
     cell: ({ row }) => {
       const staff = row.original;
-      const [open, setOpen] = useState(false);
-      const [loading, setLoading] = useState(false);
+      const [open, setOpen] = React.useState(false);
+      const [loading, setLoading] = React.useState(false);
 
       const handleDelete = async (id: number) => {
         setLoading(true);
@@ -197,7 +196,7 @@ export const columns: ColumnDef<Staff>[] = [
             console.error("Failed to delete category");
           }
         } catch (error) {
-          console.error("Failed to delete category");
+          console.error("Error deleting category:", error);
         } finally {
           setLoading(false);
           setOpen(false);
