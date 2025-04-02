@@ -31,7 +31,7 @@ export const config = {
     "/branch/create-branch/:path*",
     "/branch/:path*",
     "/cars/:path*",
-    "category/:path*",
+    "/category/:path*",
     "/category/create-category/:path*",
   ],
 };
