@@ -29,5 +29,9 @@ export const config = {
     "/users/create-user/:path*",
     "/schedule/create-schedule/:path*",
     "/branch/create-branch/:path*",
+    "/branch/:path*",
+    "/cars/:path*",
+    "category/:path*",
+    "/category/create-category/:path*",
   ],
 };
