@@ -67,7 +67,7 @@ async function getCategories() {
   const cookie = await cookies();
   const token = cookie.get("token");
   const response = await fetch(
-    "http://carmanagement-1-rmyc.onrender.com/api/v1/car-catergories/",
+    "https://carmanagement-1-rmyc.onrender.com/api/v1/car-catergories/",
     {
       method: "GET",
       headers: {
@@ -79,7 +79,7 @@ async function getCategories() {
 
   if (!response.ok) {
     console.error(
-      "Network response was not ok for features in create category"
+      "Network response was not ok for categories in create category"
     );
   }
 
@@ -120,7 +120,7 @@ export default async function CreateCars({
   const featureData = await getFeatures();
   const categories = await getCategories();
 
-  console.log("branchData", branchData);
+  console.log("branchData", categories);
 
   return (
     <SidebarProvider>
