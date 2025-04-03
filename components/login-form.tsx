@@ -30,25 +30,22 @@ export function LoginForm({
   const onSubmit = async (data: LoginFormInputs) => {
     try {
       setLoading(true);
-      // Make a POST request to the login API
-      const response = await fetch(
-        "https://carmanagement-1-rmyc.onrender.com/api/v1/token/",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            identifier: phoneNumber,
-            password: data.password,
-          }),
-        }
-      );
-
+      const response = await fetch("https://carmanagement-1-rmyc.onrender.com/api/v1/token/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          identifier: phoneNumber,
+          password: data.password,
+        }),
+      });
+  
       if (!response.ok) {
         throw new Error("Login failed. Please check your credentials.");
       }
-
+  
       const result = await response.json();
       Cookies.set("token", result.access, { secure: true });
+  
       toast.success("Login muvaffaqiyatli amalga oshirildi", {
         position: "top-right",
         closeButton: true,
@@ -57,6 +54,8 @@ export function LoginForm({
           color: "white",
         },
       });
+  
+      await router.push("/"); 
     } catch (error) {
       console.error("Login error:", error);
       toast.error("Login failed. Please try again.", {
@@ -68,10 +67,10 @@ export function LoginForm({
         },
       });
     } finally {
-      router.push("/");
       setLoading(false);
     }
   };
+  
 
   return (
     <form
