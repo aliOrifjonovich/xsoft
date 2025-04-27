@@ -30,6 +30,7 @@ import { toast } from "sonner";
 import { format, getYear } from "date-fns";
 import { DatePicker } from "./ui/datepicker";
 import { apiServiceMultipart } from "@/lib/api-client";
+import { PhoneInput } from "./ui/phone-input";
 
 interface ICreateFormProps<T extends ZodType> {
   inputs: FormInput<T>[];
@@ -110,8 +111,8 @@ const CreateForm = <T extends ZodType>({
       }
 
       // Using our centralized API service for multipart form data
-      const endpoint = id ? `${url}${id}/` : `/${url}`;
-      
+      const endpoint = id ? `/${url}${id}/` : `/${url}`;
+
       let result;
       if (isUpdated) {
         result = await apiServiceMultipart.put(endpoint, formData);
@@ -332,6 +333,12 @@ const CreateForm = <T extends ZodType>({
                                       ? getYear(new Date()) + 100
                                       : getYear(new Date())
                                   }
+                                />
+                              ) : item.type === "phone_number" ? (
+                                <PhoneInput
+                                  onChange={field.onChange}
+                                  value={field.value}
+                                  defaultCountry="UZ"
                                 />
                               ) : null}
                             </FormControl>

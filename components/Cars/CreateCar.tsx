@@ -61,11 +61,7 @@ const CreateCar: FC<IcreateCar> = ({
   isUpdated,
   id,
 }) => {
-  console.log(
-    "branchS",
-    categories
-    // categories.map((item: ICategory) => item)
-  );
+  console.log("features", features);
 
   const inputs: FormInput<typeof formSchema>[] = [
     {
@@ -257,7 +253,7 @@ const CreateCar: FC<IcreateCar> = ({
           name: "owner_name",
         },
         {
-          type: "single_line",
+          type: "phone_number",
           inputType: "text",
           label: "Owner phone",
           placeholder: "+998901234567",

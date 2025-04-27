@@ -63,8 +63,8 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   // Using our centralized API service for data fetching with SWR
   const { data: swrData, isLoading } = useSWR(
-    apiURL ? `${API_CONFIG.BASE_URL}/${apiURL}` : null, 
-    apiService.fetcher, 
+    apiURL ? `${API_CONFIG.BASE_URL}/${apiURL}` : null,
+    apiService.fetcher,
     {
       fallbackData: data,
     }
@@ -79,6 +79,7 @@ export function DataTable<TData, TValue>({
 
   // Filter data based on date range
   const filteredData = React.useMemo(() => {
+    if (!swrData?.results) return [];
     if (!isReservation || !dateRange?.from || !dateRange?.to)
       return swrData?.results ?? swrData;
     return swrData?.results?.filter((item: TData) => {

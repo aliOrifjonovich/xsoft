@@ -8,12 +8,12 @@ import { API_CONFIG, fetchServerData } from "@/lib/api-server";
 async function getData(): Promise<ClientType[]> {
   // Using our centralized API service for server components
   const data = await fetchServerData(API_CONFIG.ENDPOINTS.CLIENT);
-  
+
   // Return empty array if fetching fails
   if (!data) {
     return [];
   }
-  
+
   return data;
 }
 
@@ -25,7 +25,10 @@ export default async function Clients() {
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <Client data={data} />
+        <Client
+          data={data}
+          url={`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CLIENT_STATISTICS}`}
+        />
       </SidebarInset>
     </SidebarProvider>
   );

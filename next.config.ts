@@ -16,6 +16,8 @@ const nextConfig: NextConfig = {
       "create.vista.com",
       "randomuser.me",
       "carmanagement-1-rmyc.onrender.com",
+      "127.0.0.1",
+      "localhost",
     ],
   },
 };

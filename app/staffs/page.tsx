@@ -8,14 +8,14 @@ async function getData() {
   // Using our centralized API service for server components
   const data = await fetchServerData(API_CONFIG.ENDPOINTS.EMPLOYEE, {
     page: 1,
-    limit: 100
+    limit: 100,
   });
-  
+
   // Return empty array if fetching fails
   if (!data) {
     return [];
   }
-  
+
   return data;
 }
 
@@ -27,7 +27,10 @@ export default async function Page() {
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <Staffs data={staffdata} />
+        <Staffs
+          data={staffdata}
+          url={`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.STAFFS_STATISTICS}`}
+        />
       </SidebarInset>
     </SidebarProvider>
   );

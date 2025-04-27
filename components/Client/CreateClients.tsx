@@ -42,7 +42,7 @@ const inputs: FormInput<typeof formSchema>[] = [
         name: "email",
       },
       {
-        type: "single_line",
+        type: "phone_number",
         inputType: "text",
         label: "Phone number",
         placeholder: "+998930678542",

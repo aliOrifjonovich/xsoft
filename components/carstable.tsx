@@ -74,7 +74,7 @@ export default function CarsTable({
 
   // Using our centralized API service for data fetching with SWR
   const { data: swrData, mutate } = useSWR(
-    apiURL ? `${API_CONFIG.BASE_URL}${apiURL}` : null,
+    apiURL ? `${API_CONFIG.BASE_URL}/${apiURL}` : null,
     apiService.fetcher,
     {
       fallbackData: data,
@@ -151,10 +151,10 @@ export default function CarsTable({
       setLoading(true);
       // Using our centralized API service for deletion
       await apiService.delete(`${API_CONFIG.ENDPOINTS.CARS}/${id}/`);
-      
+
       // Refresh the data
       await mutate();
-      
+
       toast.success("Car deleted successfully", {
         position: "top-right",
         closeButton: true,

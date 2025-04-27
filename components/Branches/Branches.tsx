@@ -1,3 +1,4 @@
+"use client";
 import { BranchesType, columns } from "@/app/branch/columns";
 import React, { FC } from "react";
 import { DataTable } from "../data-table";
@@ -9,6 +10,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "../ui/breadcrumb";
+import { YMaps, Map } from "@pbe/react-yandex-maps";
 interface BranchesProp {
   data?: BranchesType[];
 }
@@ -54,6 +56,13 @@ const Branches: FC<BranchesProp> = ({ data }) => {
         url="/branch/create-branch"
         buttonTitle="Yangi Filial qo'shish"
       />
+
+      <YMaps>
+        <div>
+          My awesome application with maps!
+          <Map defaultState={{ center: [55.75, 37.57], zoom: 9 }} />
+        </div>
+      </YMaps>
     </div>
   );
 };

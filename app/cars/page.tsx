@@ -47,14 +47,14 @@ async function getData(): Promise<{ results: Vehicle[] }> {
   // Using our centralized API service for server components
   const data = await fetchServerData(API_CONFIG.ENDPOINTS.CARS, {
     page: 1,
-    limit: 50
+    limit: 50,
   });
-  
+
   // Return empty results if fetching fails
   if (!data) {
     return { results: [] };
   }
-  
+
   return data;
 }
 
@@ -66,7 +66,10 @@ export default async function Page() {
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <CarsGroup data={cars as Vehicle[]} />
+        <CarsGroup
+          data={cars as Vehicle[]}
+          url={`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CAR_STATISTICS}`}
+        />
       </SidebarInset>
     </SidebarProvider>
   );
