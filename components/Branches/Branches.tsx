@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 "use client";
+=======
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
 import { BranchesType, columns } from "@/app/branch/columns";
 import React, { FC } from "react";
 import { DataTable } from "../data-table";
@@ -10,7 +13,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "../ui/breadcrumb";
+<<<<<<< HEAD
 import { YMaps, Map } from "@pbe/react-yandex-maps";
+=======
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
 interface BranchesProp {
   data?: BranchesType[];
 }
@@ -56,6 +62,7 @@ const Branches: FC<BranchesProp> = ({ data }) => {
         url="/branch/create-branch"
         buttonTitle="Yangi Filial qo'shish"
       />
+<<<<<<< HEAD
 
       <YMaps>
         <div>
@@ -63,6 +70,8 @@ const Branches: FC<BranchesProp> = ({ data }) => {
           <Map defaultState={{ center: [55.75, 37.57], zoom: 9 }} />
         </div>
       </YMaps>
+=======
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
     </div>
   );
 };

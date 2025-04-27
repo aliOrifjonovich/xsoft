@@ -1,6 +1,10 @@
 "use client";
 
+<<<<<<< HEAD
 import { useMemo, useState, Fragment } from "react";
+=======
+import { useMemo, useState } from "react";
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
 import {
   ChevronDown,
   ChevronRight,
@@ -46,10 +50,19 @@ import {
 } from "./ui/pagination";
 import { FeaturesIcon } from "@/Icons/FeaturesIcon";
 import { ResponsiveModal } from "./ResponsiveModal";
+<<<<<<< HEAD
 import useSWR from "swr";
 import { toast } from "sonner";
 import Link from "next/link";
 import { API_CONFIG, apiService } from "@/lib/api-client";
+=======
+import { Fragment } from "react";
+import useSWR from "swr";
+import Cookies from "js-cookie";
+import { BASE_URL } from "./data-table";
+import { toast } from "sonner";
+import Link from "next/link";
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
 
 interface CarsTableProps {
   data?: Vehicle[];
@@ -70,6 +83,7 @@ export default function CarsTable({
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [open, setOpen] = useState(false);
+<<<<<<< HEAD
   const [carToDelete, setCarToDelete] = useState<number | null>(null);
 
   // Using our centralized API service for data fetching with SWR
@@ -83,6 +97,21 @@ export default function CarsTable({
       revalidateOnReconnect: true,
     }
   );
+=======
+
+  const token = Cookies.get("token");
+  const fetcher = (url: string) =>
+    fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    }).then((res) => res.json());
+
+  const { data: swrData, mutate } = useSWR(`${BASE_URL}${apiURL}`, fetcher, {
+    fallbackData: data,
+    revalidateOnFocus: false,
+    revalidateIfStale: true,
+    revalidateOnReconnect: true,
+  });
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
 
   // Status badge colors
   const statusColors: Record<string, string> = {
@@ -141,6 +170,7 @@ export default function CarsTable({
     return statusColors[status] || "bg-gray-500 hover:bg-gray-600";
   };
 
+<<<<<<< HEAD
   const openDeleteModal = (id: number) => {
     setCarToDelete(id);
     setOpen(true);
@@ -155,6 +185,28 @@ export default function CarsTable({
       // Refresh the data
       await mutate();
 
+=======
+  const handleDelete = async (id: number) => {
+    try {
+      const response = await fetch(
+        `https://carmanagement-1-rmyc.onrender.com/api/v1/cars/${id}/`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.ok) {
+        await mutate(`${BASE_URL}cars?page=1&limit=100`, { revalidate: true });
+      }
+    } catch (error) {
+      console.error("Error deleting branch:", error);
+    } finally {
+      setOpen(false);
+      setLoading(false);
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
       toast.success("Car deleted successfully", {
         position: "top-right",
         closeButton: true,
@@ -163,6 +215,7 @@ export default function CarsTable({
           color: "white",
         },
       });
+<<<<<<< HEAD
     } catch (error) {
       console.error("Error deleting car:", error);
       toast.error("Failed to delete car", {
@@ -178,6 +231,12 @@ export default function CarsTable({
       setLoading(false);
       setCarToDelete(null);
     }
+=======
+    }
+
+    setOpen(false);
+    window.location.reload();
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
   };
 
   const PaginationControls = () => (
@@ -261,7 +320,11 @@ export default function CarsTable({
           </TableHeader>
 
           <TableBody>
+<<<<<<< HEAD
             {loading && !paginatedData?.length ? (
+=======
+            {loading ? (
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
               <TableRow>
                 <TableCell colSpan={12} className="py-20 text-center">
                   <Loader2 className="h-10 w-10 animate-spin mx-auto text-gray-500" />
@@ -301,7 +364,11 @@ export default function CarsTable({
                     </TableCell>
                     <TableCell>
                       <Image
+<<<<<<< HEAD
                         src={`${API_CONFIG.BASE_URL}${
+=======
+                        src={`https://carmanagement-1-rmyc.onrender.com${
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
                           car.images?.[0]?.photo || ""
                         }`}
                         alt={`${car.brand}`}
@@ -353,6 +420,7 @@ export default function CarsTable({
                           </Link>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
+<<<<<<< HEAD
                             onClick={(e) => {
                               e.stopPropagation();
                               openDeleteModal(car?.id);
@@ -360,6 +428,14 @@ export default function CarsTable({
                             className="flex items-center gap-2 text-red-500"
                           >
                             {loading && carToDelete === car.id ? (
+=======
+                            onClick={() => {
+                              setOpen(true);
+                            }}
+                            className="flex items-center gap-2 text-red-500"
+                          >
+                            {loading ? (
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
                               <Loader2 className="animate-spin h-4 w-4" />
                             ) : (
                               <span className="flex items-center gap-2">
@@ -371,12 +447,21 @@ export default function CarsTable({
                         </DropdownMenuContent>
                       </DropdownMenu>
                       <ResponsiveModal
+<<<<<<< HEAD
                         open={open && carToDelete === car.id}
                         setOpen={setOpen}
                         loading={loading}
                         title={`${car.model} fillialini o'chirmoqchimisiz??`}
                         description="Shu branchni o'chirishni tasdiqlaysizmi?"
                         onConfirm={() => handleDelete(car.id)}
+=======
+                        open={open}
+                        setOpen={setOpen}
+                        loading={loading}
+                        title={`${car.model} fillialini o'chirmoqchimisiz??`}
+                        description="Shu branchni o‘chirishni tasdiqlaysizmi?"
+                        onConfirm={() => handleDelete(Number(car?.id))}
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
                       />
                     </TableCell>
                   </TableRow>
@@ -617,7 +702,11 @@ export default function CarsTable({
                                     className="rounded-lg overflow-hidden"
                                   >
                                     <Image
+<<<<<<< HEAD
                                       src={`${API_CONFIG.BASE_URL}${photo?.photo}`}
+=======
+                                      src={`https://carmanagement-1-rmyc.onrender.com${photo?.photo}`}
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
                                       alt={`${car?.brand}`}
                                       width={500}
                                       height={300}

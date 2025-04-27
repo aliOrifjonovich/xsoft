@@ -1,4 +1,8 @@
 "use client";
+<<<<<<< HEAD
+=======
+import Cookies from "js-cookie";
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -9,7 +13,10 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { PhoneInput } from "./ui/phone-input";
+<<<<<<< HEAD
 import { API_CONFIG, apiService, setAuthToken } from "@/lib/api-client";
+=======
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
 
 interface LoginFormInputs {
   phonenumber: string;
@@ -30,6 +37,7 @@ export function LoginForm({
   const onSubmit = async (data: LoginFormInputs) => {
     try {
       setLoading(true);
+<<<<<<< HEAD
       console.log("Login attempt with:", { phone: phoneNumber, password: data.password });
       
       const result = await apiService.post(API_CONFIG.ENDPOINTS.LOGIN, {
@@ -41,6 +49,23 @@ export function LoginForm({
   
       // Store the token using our centralized helper
       setAuthToken(result.access);
+=======
+      const response = await fetch("https://carmanagement-1-rmyc.onrender.com/api/v1/token/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          identifier: phoneNumber,
+          password: data.password,
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Login failed. Please check your credentials.");
+      }
+  
+      const result = await response.json();
+      Cookies.set("token", result.access, { secure: true });
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
   
       toast.success("Login muvaffaqiyatli amalga oshirildi", {
         position: "top-right",
@@ -89,6 +114,15 @@ export function LoginForm({
             value={phoneNumber}
             defaultCountry="UZ"
           />
+<<<<<<< HEAD
+=======
+          {/* <Input
+            id="phonenumber"
+            type="text"
+            placeholder="+99890 123 45 67"
+            {...register("phonenumber", { required: true })}
+          /> */}
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
         </div>
 
         {/* Password Field */}

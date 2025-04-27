@@ -24,8 +24,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ResponsiveModal } from "@/components/ResponsiveModal";
 import Link from "next/link";
 import { mutate } from "swr";
+<<<<<<< HEAD
 import { toast } from "sonner";
 import { API_CONFIG, apiService } from "@/lib/api-client";
+=======
+import { BASE_URL } from "@/components/data-table";
+import { toast } from "sonner";
+import Cookies from "js-cookie";
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
 
 export type Staff = {
   id: number;
@@ -70,6 +76,7 @@ const ActionsCell = ({ row }: { row: { original: Staff } }) => {
 
   const handleDelete = async (id: number) => {
     setLoading(true);
+<<<<<<< HEAD
 
     try {
       // Using our centralized API service for deletion
@@ -98,6 +105,38 @@ const ActionsCell = ({ row }: { row: { original: Staff } }) => {
           color: "white",
         },
       });
+=======
+    const token = Cookies.get("token");
+
+    try {
+      const response = await fetch(
+        `https://carmanagement-1-rmyc.onrender.com/api/v1/employee/${id}/`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        await mutate(`${BASE_URL}employee/`, undefined, {
+          revalidate: true,
+        });
+        toast.success("Staff deleted successfully", {
+          position: "top-right",
+          closeButton: true,
+          style: {
+            backgroundColor: "green",
+            color: "white",
+          },
+        });
+      } else {
+        console.error("Failed to delete category");
+      }
+    } catch (error) {
+      console.error("Error deleting category:", error);
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
     } finally {
       setLoading(false);
       setOpen(false);
@@ -133,8 +172,13 @@ const ActionsCell = ({ row }: { row: { original: Staff } }) => {
         open={open}
         setOpen={setOpen}
         loading={loading}
+<<<<<<< HEAD
         title={`${staff.fullname} ma'lumotlarini o'chirmoqchimisiz??`}
         description="Shu xodimni o'chirishni tasdiqlaysizmi?"
+=======
+        title={`${staff.fullname} fillialini o'chirmoqchimisiz??`}
+        description="Shu branchni o‘chirishni tasdiqlaysizmi?"
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
         onConfirm={() => handleDelete(staff.id)}
       />
     </>

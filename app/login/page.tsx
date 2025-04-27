@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 "use client";
 
 import { LoginForm } from "@/components/login-form";
@@ -7,6 +8,15 @@ import Link from "next/link";
 import bgimage from "../../assets/bgimage.png";
 
 export default function LoginPage() {
+=======
+import { GalleryVerticalEnd } from "lucide-react";
+import bgimage from "../../assets/bgimage.png";
+import { LoginForm } from "@/components/login-form";
+import Image from "next/image";
+import Link from "next/link";
+
+export default async function LoginPage() {
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">

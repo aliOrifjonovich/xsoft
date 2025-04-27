@@ -11,6 +11,7 @@ import {
 import { DataTable } from "../data-table";
 import { ClientType, columns } from "@/app/clients/columns";
 import { Card } from "../ui/card";
+<<<<<<< HEAD
 import useSWR from "swr";
 import Cookies from "js-cookie";
 
@@ -66,6 +67,40 @@ const Client: FC<ClientProps> = ({ data, url }) => {
       color: "text-red-500",
     },
   ];
+=======
+
+interface ClientProps {
+  data?: ClientType[];
+}
+const fakedata = [
+  {
+    id: "1",
+    title: "Umumiy Mijozlar soni",
+    count: 10,
+    color: "text-primary",
+  },
+  {
+    id: "2",
+    title: "Doimiy Mijozlar",
+    count: 2,
+    color: "text-green-500",
+  },
+  {
+    id: "4",
+    title: "Passiv mijozlar",
+    count: 5,
+    color: "text-gray-400",
+  },
+  {
+    id: "3",
+    title: "Qora ro'yxatdagi mijozlar",
+    count: 3,
+    color: "text-red-500",
+  },
+];
+const Client: FC<ClientProps> = ({ data }) => {
+  console.log("datas", data);
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
 
   return (
     <div className="px-4 py-2 flex flex-col gap-4">
@@ -83,6 +118,7 @@ const Client: FC<ClientProps> = ({ data, url }) => {
         </Breadcrumb>
 
         <div className="flex w-full gap-4">
+<<<<<<< HEAD
           {client_statistics?.map((item, index) => (
             <Card
               key={index}
@@ -90,6 +126,15 @@ const Client: FC<ClientProps> = ({ data, url }) => {
             >
               <div className="flex flex-col gap-1">
                 <h2 className={item.color + " font-semibold"}>{item.title}</h2>
+=======
+          {fakedata?.map((item) => (
+            <Card
+              key={item.id}
+              className="w-1/4 flex flex-col gap-2 items-center justify-center "
+            >
+              <div className="flex flex-col gap-1">
+                <h2 className=" text-gray-500">{item.title}</h2>
+>>>>>>> d1c5e5d5e48c6edc247664865d4636e9d14f2802
                 <h1
                   className={item.color + " font-semibold text-3xl text-center"}
                 >
